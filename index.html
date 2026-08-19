@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summer School Staff Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: white;
+            padding: 28px 20px 32px;
+            border-radius: 0 0 24px 24px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .school-name {
+            font-size: 14px;
+            opacity: 0.85;
+            margin-bottom: 5px;
+        }
+
+        .header h1 {
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .profile {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: white;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 17px;
+        }
+
+        .date {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Main content */
+        .container {
+            max-width: 700px;
+            margin: auto;
+            padding: 20px 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 8px 0 14px;
+        }
+
+        /* Current activity */
+        .current-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            margin-bottom: 24px;
+            border-left: 5px solid #22c55e;
+        }
+
+        .current-label {
+            display: inline-block;
+            background: #dcfce7;
+            color: #15803d;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 9px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+
+        .current-card h2 {
+            font-size: 23px;
+            margin-bottom: 7px;
+        }
+
+        .activity-time {
+            color: #6b7280;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .activity-info {
+            display: flex;
+            gap: 15px;
+            color: #4b5563;
+            font-size: 14px;
+        }
+
+        /* Schedule */
+        .timeline {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .schedule-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 14px;
+        }
+
+        .time {
+            width: 62px;
+            flex-shrink: 0;
+            font-size: 13px;
+            color: #6b7280;
+            padding-top: 17px;
+            text-align: right;
+        }
+
+        .schedule-card {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .schedule-card h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .schedule-card p {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .completed {
+            opacity: 0.55;
+        }
+
+        .completed .schedule-card {
+            background: #eef0f2;
+        }
+
+        .upcoming {
+            border-left: 4px solid #6366f1;
+        }
+
+        /* Duty cards */
+        .duties {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .duty-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .duty-icon {
+            font-size: 24px;
+            margin-bottom: 9px;
+        }
+
+        .duty-card h3 {
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .duty-card p {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .duty-status {
+            margin-top: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #16a34a;
+        }
+
+        .dinner .duty-status {
+            color: #d97706;
+        }
+
+        /* Notes */
+        .notice {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .notice h3 {
+            font-size: 15px;
+            margin-bottom: 6px;
+            color: #9a3412;
+        }
+
+        .notice p {
+            font-size: 13px;
+            color: #7c2d12;
+            line-height: 1.5;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .nav-item {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 11px;
+            text-decoration: none;
+        }
+
+        .nav-item span {
+            display: block;
+            font-size: 21px;
+            margin-bottom: 3px;
+        }
+
+        .nav-item.active {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        /* Desktop */
+        @media (min-width: 700px) {
+            .header {
+                border-radius: 0;
+                padding-left: calc((100% - 668px) / 2);
+                padding-right: calc((100% - 668px) / 2);
+            }
+
+            .container {
+                padding-top: 30px;
+            }
+
+            .bottom-nav {
+                width: 700px;
+                left: 50%;
+                transform: translateX(-50%);
+                border: 1px solid #e5e7eb;
+                border-radius: 18px 18px 0 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+
+        <div class="header-top">
+
+            <div>
+                <div class="school-name">SUMMER SCHOOL 2026</div>
+                <h1>Good afternoon, James 👋</h1>
+            </div>
+
+            <div class="profile">
+                JH
+            </div>
+
+        </div>
+
+        <div class="date">
+            Wednesday, 19 August
+        </div>
+
+    </header>
+
+
+    <!-- Main dashboard -->
+    <main class="container">
+
+        <!-- Current activity -->
+        <div class="section-title">
+            Your activity
+        </div>
+
+        <div class="current-card">
+
+            <div class="current-label">
+                ● NOW
+            </div>
+
+            <h2>Sports Activities</h2>
+
+            <div class="activity-time">
+                14:00 – 16:00
+            </div>
+
+            <div class="activity-info">
+                <span>📍 Basketball Court</span>
+                <span>👥 Group B</span>
+            </div>
+
+        </div>
+
+
+        <!-- Today's schedule -->
+        <div class="section-title">
+            Today's schedule
+        </div>
+
+        <div class="timeline">
+
+            <div class="schedule-item completed">
+
+                <div class="time">
+                    09:00
+                </div>
+
+                <div class="schedule-card">
+                    <h3>Morning Registration</h3>
+                    <p>📍 Main Hall</p>
+                </div>
+
+            </div>
+
+
+            <div class="schedule-item completed">
+
+                <div class="time">
+                    10:00
+                </div>
+
+                <div class="schedule-card">
+                    <h3>English Classes</h3>
+                    <p>📍 Classroom 4 · Group B</p>
+                </div>
+
+            </div>
+
+
+            <div class="schedule-item completed">
+
+                <div class="time">
+                    12:00
+                </div>
+
+                <div class="schedule-card">
+                    <h3>Lunch Duty</h3>
+                    <p>📍 Dining Hall</p>
+                </div>
+
+            </div>
+
+
+            <div class="schedule-item">
+
+                <div class="time">
+                    14:00
+                </div>
+
+                <div class="schedule-card upcoming">
+                    <h3>Sports Activities</h3>
+                    <p>📍 Basketball Court · Group B</p>
+                </div>
+
+            </div>
+
+
+            <div class="schedule-item">
+
+                <div class="time">
+                    16:30
+                </div>
+
+                <div class="schedule-card">
+                    <h3>Free Time</h3>
+                    <p>📍 Campus</p>
+                </div>
+
+            </div>
+
+
+            <div class="schedule-item">
+
+                <div class="time">
+                    18:00
+                </div>
+
+                <div class="schedule-card upcoming">
+                    <h3>Dinner Duty</h3>
+                    <p>📍 Dining Hall</p>
+                </div>
+
+            </div>
+
+
+            <div class="schedule-item">
+
+                <div class="time">
+                    20:00
+                </div>
+
+                <div class="schedule-card">
+                    <h3>Movie Night</h3>
+                    <p>📍 Common Room</p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Duties -->
+        <div class="section-title">
+            Your duties
+        </div>
+
+        <div class="duties">
+
+            <div class="duty-card">
+
+                <div class="duty-icon">
+                    🍽️
+                </div>
+
+                <h3>Lunch Duty</h3>
+
+                <p>
+                    12:00 – 14:00<br>
+                    Dining Hall
+                </p>
+
+                <div class="duty-status">
+                    ✓ COMPLETED
+                </div>
+
+            </div>
+
+
+            <div class="duty-card dinner">
+
+                <div class="duty-icon">
+                    🍴
+                </div>
+
+                <h3>Dinner Duty</h3>
+
+                <p>
+                    18:00 – 19:30<br>
+                    Dining Hall
+                </p>
+
+                <div class="duty-status">
+                    UPCOMING
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Notice -->
+        <div class="section-title">
+            Important
+        </div>
+
+        <div class="notice">
+
+            <h3>📢 Staff briefing</h3>
+
+            <p>
+                Please meet in the staff room at 17:45
+                before dinner duty begins.
+            </p>
+
+        </div>
+
+    </main>
+
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+
+        <a href="#" class="nav-item active">
+            <span>🏠</span>
+            Home
+        </a>
+
+        <a href="#" class="nav-item">
+            <span>📅</span>
+            Schedule
+        </a>
+
+        <a href="#" class="nav-item">
+            <span>🍽️</span>
+            Duties
+        </a>
+
+        <a href="#" class="nav-item">
+            <span>👤</span>
+            Profile
+        </a>
+
+    </nav>
+
+</body>
+</html>
