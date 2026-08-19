@@ -421,6 +421,29 @@ Activities & Excursions
 
 <button
     class="secondary"
+    onclick="openStaffManager()"
+>
+👤 Manage Staff
+</button>
+
+<button
+    class="secondary"
+    onclick="copyDay()"
+>
+Copy Day
+</button>
+
+<button
+    class="danger"
+    onclick="clearDay()"
+>
+Clear Day
+</button>
+
+</div>
+
+<button
+    class="secondary"
     onclick="copyDay()"
 >
 Copy Day
@@ -616,7 +639,92 @@ Save Activity
 
 
 <script src="app.js"></script>
+<div
+    id="staffModal"
+    class="modal"
+>
 
+<div class="modal-box">
+
+<h2>
+Manage Staff
+</h2>
+
+
+<div
+    id="staffList"
+    style="
+        display:grid;
+        gap:8px;
+        margin-bottom:18px;
+    "
+></div>
+
+
+<div
+    style="
+        border-top:1px solid #e5e7eb;
+        padding-top:16px;
+    "
+>
+
+<label
+    style="
+        display:block;
+        font-size:11px;
+        font-weight:700;
+        color:#6b7280;
+        margin-bottom:5px;
+    "
+>
+New Staff Member
+</label>
+
+
+<div
+    style="
+        display:flex;
+        gap:8px;
+    "
+>
+
+<input
+    id="newStaffName"
+    placeholder="e.g. John Smith"
+    style="
+        flex:1;
+        width:100%;
+    "
+>
+
+
+<button
+    class="primary"
+    onclick="addStaff()"
+>
+Add
+</button>
+
+</div>
+
+</div>
+
+
+<div class="modal-actions">
+
+<button
+    class="secondary"
+    onclick="closeStaffManager()"
+>
+Done
+</button>
+
+</div>
+
+
+</div>
+
+</div>
 
 <script>
 
@@ -1391,6 +1499,320 @@ function closeModal() {
 
 render();
 
+/* =====================================================
+   STAFF MANAGER
+===================================================== */
+
+function openStaffManager() {
+
+    data = getData();
+
+    renderStaffManager();
+
+    document
+        .getElementById("staffModal")
+        .classList.add("show");
+}
+
+
+function closeStaffManager() {
+
+    document
+        .getElementById("staffModal")
+        .classList.remove("show");
+
+    render();
+}
+
+
+/* =====================================================
+   DISPLAY STAFF
+===================================================== */
+
+function renderStaffManager() {
+
+    data = getData();
+
+    const container =
+        document.getElementById(
+            "staffList"
+        );
+
+
+    if (!data.staff.length) {
+
+        container.innerHTML = `
+
+            <div
+                style="
+                    padding:20px;
+                    text-align:center;
+                    color:#9ca3af;
+                    background:#f8fafc;
+                    border-radius:10px;
+                    font-size:12px;
+                "
+            >
+                No staff members yet.
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        data.staff.map(person => `
+
+            <div
+                style="
+                    display:flex;
+                    align-items:center;
+                    gap:10px;
+                    padding:11px;
+                    background:#f8fafc;
+                    border-radius:10px;
+                "
+            >
+
+                <div
+                    style="
+                        width:34px;
+                        height:34px;
+                        border-radius:50%;
+                        background:#e0e7ff;
+                        color:#3730a3;
+                        display:grid;
+                        place-items:center;
+                        font-size:10px;
+                        font-weight:800;
+                    "
+                >
+
+                    ${getInitials(person.name)}
+
+                </div>
+
+
+                <div
+                    style="
+                        flex:1;
+                        font-size:13px;
+                        font-weight:700;
+                    "
+                >
+
+                    ${esc(person.name)}
+
+                </div>
+
+
+                <button
+                    class="danger"
+                    style="
+                        padding:7px 10px;
+                        font-size:11px;
+                    "
+                    onclick="
+                        removeStaff('${person.id}')
+                    "
+                >
+                    Delete
+                </button>
+
+            </div>
+
+        `).join("");
+}
+
+
+/* =====================================================
+   ADD STAFF
+===================================================== */
+
+function addStaff() {
+
+    const input =
+        document.getElementById(
+            "newStaffName"
+        );
+
+
+    const name =
+        input.value.trim();
+
+
+    if (!name) {
+
+        alert(
+            "Please enter a staff member's name."
+        );
+
+        return;
+    }
+
+
+    data = getData();
+
+
+    /* Prevent duplicates */
+
+    const alreadyExists =
+        data.staff.some(
+            person =>
+                person.name
+                    .toLowerCase() ===
+                name.toLowerCase()
+        );
+
+
+    if (alreadyExists) {
+
+        alert(
+            "That staff member already exists."
+        );
+
+        return;
+    }
+
+
+    data.staff.push({
+
+        id: newId("staff"),
+
+        name: name
+
+    });
+
+
+    saveData(data);
+
+
+    input.value = "";
+
+
+    renderStaffManager();
+
+
+    /*
+        Refresh the activity form too,
+        so the new employee immediately
+        appears in the staff checkboxes.
+    */
+
+    renderStaffCheckboxes();
+
+}
+
+
+/* =====================================================
+   DELETE STAFF
+===================================================== */
+
+function removeStaff(id) {
+
+    data = getData();
+
+
+    const person =
+        data.staff.find(
+            staff =>
+                staff.id === id
+        );
+
+
+    if (!person)
+        return;
+
+
+    /*
+        Check whether this person
+        is assigned to any activities.
+    */
+
+    const assignedActivities =
+        data.activities.filter(
+            activity =>
+                activity.staff.includes(id)
+        );
+
+
+    let message =
+        `Remove ${person.name}?`;
+
+
+    if (assignedActivities.length) {
+
+        message +=
+            `\n\nThey are currently assigned to ` +
+            `${assignedActivities.length} ` +
+            `activity/activities. ` +
+            `They will be removed from those activities.`;
+
+    }
+
+
+    if (!confirm(message))
+        return;
+
+
+    /* Remove from staff list */
+
+    data.staff =
+        data.staff.filter(
+            staff =>
+                staff.id !== id
+        );
+
+
+    /*
+        Remove them from
+        every activity assignment.
+    */
+
+    data.activities.forEach(
+        activity => {
+
+            activity.staff =
+                activity.staff.filter(
+                    staffId =>
+                        staffId !== id
+                );
+
+        }
+    );
+
+
+    saveData(data);
+
+
+    renderStaffManager();
+
+
+    renderStaffCheckboxes();
+
+}
+
+
+/* =====================================================
+   INITIALS
+===================================================== */
+
+function getInitials(name) {
+
+    return name
+        .split(/\s+/)
+        .map(
+            part =>
+                part.charAt(0)
+        )
+        .slice(0, 2)
+        .join("")
+        .toUpperCase();
+
+}
+    
 </script>
 
 </body>
