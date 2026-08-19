@@ -1,541 +1,1357 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Summer School Staff Dashboard</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<meta charset="UTF-8">
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background: #f4f6f8;
-            color: #1f2937;
-            padding-bottom: 80px;
-        }
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #2563eb, #4f46e5);
-            color: white;
-            padding: 28px 20px 32px;
-            border-radius: 0 0 24px 24px;
-        }
+<title>Summer School - Staff Dashboard</title>
 
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
 
-        .school-name {
-            font-size: 14px;
-            opacity: 0.85;
-            margin-bottom: 5px;
-        }
+<style>
 
-        .header h1 {
-            font-size: 25px;
-            font-weight: 700;
-        }
+/* =====================================================
+   GENERAL
+===================================================== */
 
-        .profile {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: white;
-            color: #2563eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 17px;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        .date {
-            font-size: 14px;
-            opacity: 0.9;
-        }
+body {
 
-        /* Main content */
-        .container {
-            max-width: 700px;
-            margin: auto;
-            padding: 20px 16px;
-        }
+    margin: 0;
 
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 8px 0 14px;
-        }
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
 
-        /* Current activity */
-        .current-card {
-            background: white;
-            border-radius: 18px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-            margin-bottom: 24px;
-            border-left: 5px solid #22c55e;
-        }
+    background: #f3f5f8;
 
-        .current-label {
-            display: inline-block;
-            background: #dcfce7;
-            color: #15803d;
-            font-size: 12px;
-            font-weight: 700;
-            padding: 5px 9px;
-            border-radius: 20px;
-            margin-bottom: 12px;
-        }
+    color: #172033;
 
-        .current-card h2 {
-            font-size: 23px;
-            margin-bottom: 7px;
-        }
+    padding-bottom: 80px;
+}
 
-        .activity-time {
-            color: #6b7280;
-            font-size: 15px;
-            margin-bottom: 15px;
-        }
 
-        .activity-info {
-            display: flex;
-            gap: 15px;
-            color: #4b5563;
-            font-size: 14px;
-        }
+/* =====================================================
+   HEADER
+===================================================== */
 
-        /* Schedule */
-        .timeline {
-            position: relative;
-            margin-bottom: 25px;
-        }
+header {
 
-        .schedule-item {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 14px;
-        }
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4f46e5
+        );
 
-        .time {
-            width: 62px;
-            flex-shrink: 0;
-            font-size: 13px;
-            color: #6b7280;
-            padding-top: 17px;
-            text-align: right;
-        }
+    color: white;
 
-        .schedule-card {
-            flex: 1;
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
+    padding: 25px 20px;
+}
 
-        .schedule-card h3 {
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
+.header-inner {
 
-        .schedule-card p {
-            color: #6b7280;
-            font-size: 13px;
-        }
+    max-width: 850px;
 
-        .completed {
-            opacity: 0.55;
-        }
+    margin: auto;
+}
 
-        .completed .schedule-card {
-            background: #eef0f2;
-        }
+.header-small {
 
-        .upcoming {
-            border-left: 4px solid #6366f1;
-        }
+    font-size: 11px;
 
-        /* Duty cards */
-        .duties {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
+    letter-spacing: 1px;
 
-        .duty-card {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
+    font-weight: 700;
 
-        .duty-icon {
-            font-size: 24px;
-            margin-bottom: 9px;
-        }
+    opacity: .8;
+}
 
-        .duty-card h3 {
-            font-size: 15px;
-            margin-bottom: 5px;
-        }
+header h1 {
 
-        .duty-card p {
-            font-size: 13px;
-            color: #6b7280;
-        }
+    margin: 5px 0 0;
 
-        .duty-status {
-            margin-top: 10px;
-            font-size: 11px;
-            font-weight: 700;
-            color: #16a34a;
-        }
+    font-size: 27px;
+}
 
-        .dinner .duty-status {
-            color: #d97706;
-        }
 
-        /* Notes */
-        .notice {
-            background: #fff7ed;
-            border: 1px solid #fed7aa;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 20px;
-        }
+/* =====================================================
+   MAIN
+===================================================== */
 
-        .notice h3 {
-            font-size: 15px;
-            margin-bottom: 6px;
-            color: #9a3412;
-        }
+.container {
 
-        .notice p {
-            font-size: 13px;
-            color: #7c2d12;
-            line-height: 1.5;
-        }
+    max-width: 850px;
 
-        /* Bottom navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 68px;
-            background: white;
-            border-top: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 100;
-        }
+    margin: auto;
 
-        .nav-item {
-            text-align: center;
-            color: #9ca3af;
-            font-size: 11px;
-            text-decoration: none;
-        }
+    padding: 20px 15px;
+}
 
-        .nav-item span {
-            display: block;
-            font-size: 21px;
-            margin-bottom: 3px;
-        }
 
-        .nav-item.active {
-            color: #2563eb;
-            font-weight: 600;
-        }
+/* =====================================================
+   DATE HEADER
+===================================================== */
 
-        /* Desktop */
-        @media (min-width: 700px) {
-            .header {
-                border-radius: 0;
-                padding-left: calc((100% - 668px) / 2);
-                padding-right: calc((100% - 668px) / 2);
-            }
+.date-card {
 
-            .container {
-                padding-top: 30px;
-            }
+    background: white;
 
-            .bottom-nav {
-                width: 700px;
-                left: 50%;
-                transform: translateX(-50%);
-                border: 1px solid #e5e7eb;
-                border-radius: 18px 18px 0 0;
-            }
-        }
-    </style>
+    border-radius: 16px;
+
+    padding: 15px 18px;
+
+    margin-bottom: 18px;
+
+    box-shadow:
+        0 2px 10px rgba(0,0,0,.05);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.date-card small {
+
+    display: block;
+
+    color: #6b7280;
+
+    font-size: 11px;
+
+    margin-bottom: 3px;
+}
+
+.date-card strong {
+
+    font-size: 16px;
+}
+
+
+/* =====================================================
+   STAFF GRID
+===================================================== */
+
+.staff-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 14px;
+}
+
+
+/* =====================================================
+   STAFF CARD
+===================================================== */
+
+.staff-card {
+
+    background: white;
+
+    border-radius: 17px;
+
+    padding: 18px;
+
+    text-decoration: none;
+
+    color: inherit;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.05);
+
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease;
+
+    border: 1px solid #eef0f3;
+
+    display: block;
+}
+
+.staff-card:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 7px 20px rgba(0,0,0,.08);
+}
+
+
+/* =====================================================
+   STAFF CARD HEADER
+===================================================== */
+
+.staff-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 15px;
+}
+
+
+/* AVATAR */
+
+.avatar {
+
+    width: 46px;
+
+    height: 46px;
+
+    border-radius: 50%;
+
+    background:
+        #e0e7ff;
+
+    color: #3730a3;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    flex-shrink: 0;
+}
+
+
+/* NAME */
+
+.staff-name {
+
+    flex: 1;
+}
+
+.staff-name h2 {
+
+    font-size: 16px;
+
+    margin: 0 0 3px;
+
+    line-height: 1.2;
+}
+
+.staff-name p {
+
+    margin: 0;
+
+    color: #9ca3af;
+
+    font-size: 11px;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.status {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.status-dot {
+
+    width: 11px;
+
+    height: 11px;
+
+    border-radius: 50%;
+
+    flex-shrink: 0;
+}
+
+
+/* WORKING */
+
+.status-working {
+
+    color: #15803d;
+}
+
+.status-working .status-dot {
+
+    background: #22c55e;
+
+    box-shadow:
+        0 0 0 4px #dcfce7;
+}
+
+
+/* NOT WORKING */
+
+.status-off {
+
+    color: #dc2626;
+}
+
+.status-off .status-dot {
+
+    background: #ef4444;
+
+    box-shadow:
+        0 0 0 4px #fee2e2;
+}
+
+
+/* =====================================================
+   NEXT SHIFT
+===================================================== */
+
+.next-shift {
+
+    border-top:
+        1px solid #eef0f2;
+
+    padding-top: 13px;
+}
+
+.next-shift-label {
+
+    color: #9ca3af;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .5px;
+
+    margin-bottom: 5px;
+}
+
+.next-shift-name {
+
+    font-weight: 700;
+
+    font-size: 14px;
+
+    margin-bottom: 3px;
+}
+
+.next-shift-time {
+
+    font-size: 12px;
+
+    color: #6b7280;
+}
+
+.next-shift-location {
+
+    font-size: 11px;
+
+    color: #9ca3af;
+
+    margin-top: 3px;
+}
+
+
+/* =====================================================
+   OFF MESSAGE
+===================================================== */
+
+.off-message {
+
+    border-top:
+        1px solid #eef0f2;
+
+    padding-top: 13px;
+
+    color: #9ca3af;
+
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   EMPTY
+===================================================== */
+
+.empty {
+
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 35px 20px;
+
+    text-align: center;
+
+    color: #9ca3af;
+}
+
+
+/* =====================================================
+   ADMIN BUTTON
+===================================================== */
+
+.admin-link {
+
+    display: block;
+
+    background: white;
+
+    border-radius: 14px;
+
+    padding: 14px;
+
+    margin-top: 18px;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    color: #2563eb;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.04);
+}
+
+
+/* =====================================================
+   BOTTOM NAV
+===================================================== */
+
+.bottom-nav {
+
+    position: fixed;
+
+    bottom: 0;
+
+    left: 0;
+
+    right: 0;
+
+    height: 65px;
+
+    background: white;
+
+    border-top:
+        1px solid #e5e7eb;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 70px;
+
+    z-index: 50;
+}
+
+.bottom-nav a {
+
+    text-decoration: none;
+
+    color: #6b7280;
+
+    font-size: 11px;
+
+    text-align: center;
+}
+
+.bottom-nav a.active {
+
+    color: #2563eb;
+}
+
+.bottom-nav span {
+
+    display: block;
+
+    font-size: 20px;
+
+    margin-bottom: 2px;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 600px) {
+
+    .staff-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+
+        font-size: 23px;
+    }
+
+    .staff-card {
+
+        padding: 16px;
+    }
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (max-width: 360px) {
+
+    .staff-header {
+
+        gap: 9px;
+    }
+
+    .staff-name h2 {
+
+        font-size: 15px;
+    }
+
+}
+
+</style>
+
 </head>
+
 
 <body>
 
-    <!-- Header -->
-    <header class="header">
 
-        <div class="header-top">
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
-            <div>
-                <div class="school-name">SUMMER SCHOOL 2026</div>
-                <h1>Good afternoon, James 👋</h1>
-            </div>
+<header>
 
-            <div class="profile">
-                JH
-            </div>
+<div class="header-inner">
 
-        </div>
+<div class="header-small">
+    SUMMER SCHOOL 2026
+</div>
 
-        <div class="date">
-            Wednesday, 19 August
-        </div>
+<h1>
+    Staff Dashboard
+</h1>
 
-    </header>
+</div>
 
+</header>
 
-    <!-- Main dashboard -->
-    <main class="container">
 
-        <!-- Current activity -->
-        <div class="section-title">
-            Your activity
-        </div>
+<main class="container">
 
-        <div class="current-card">
 
-            <div class="current-label">
-                ● NOW
-            </div>
+<!-- =====================================================
+     DATE
+===================================================== -->
 
-            <h2>Sports Activities</h2>
+<div class="date-card">
 
-            <div class="activity-time">
-                14:00 – 16:00
-            </div>
+<div>
 
-            <div class="activity-info">
-                <span>📍 Basketball Court</span>
-                <span>👥 Group B</span>
-            </div>
+<small>
+    TODAY
+</small>
 
-        </div>
+<strong id="dateDisplay">
+    Loading...
+</strong>
 
+</div>
 
-        <!-- Today's schedule -->
-        <div class="section-title">
-            Today's schedule
-        </div>
+</div>
 
-        <div class="timeline">
 
-            <div class="schedule-item completed">
+<!-- =====================================================
+     STAFF
+===================================================== -->
 
-                <div class="time">
-                    09:00
-                </div>
+<div
+    id="staffGrid"
+    class="staff-grid">
 
-                <div class="schedule-card">
-                    <h3>Morning Registration</h3>
-                    <p>📍 Main Hall</p>
-                </div>
+</div>
 
-            </div>
 
+<!-- =====================================================
+     ADMIN
+===================================================== -->
 
-            <div class="schedule-item completed">
+<a
+    href="admin.html"
+    class="admin-link">
 
-                <div class="time">
-                    10:00
-                </div>
+    ⚙️ Manage Staff Schedules
 
-                <div class="schedule-card">
-                    <h3>English Classes</h3>
-                    <p>📍 Classroom 4 · Group B</p>
-                </div>
+</a>
 
-            </div>
 
+</main>
 
-            <div class="schedule-item completed">
 
-                <div class="time">
-                    12:00
-                </div>
+<!-- =====================================================
+     BOTTOM NAV
+===================================================== -->
 
-                <div class="schedule-card">
-                    <h3>Lunch Duty</h3>
-                    <p>📍 Dining Hall</p>
-                </div>
+<nav class="bottom-nav">
 
-            </div>
+<a
+    href="index.html"
+    class="active">
 
+<span>⌂</span>
 
-            <div class="schedule-item">
+Staff
 
-                <div class="time">
-                    14:00
-                </div>
+</a>
 
-                <div class="schedule-card upcoming">
-                    <h3>Sports Activities</h3>
-                    <p>📍 Basketball Court · Group B</p>
-                </div>
 
-            </div>
+<a href="admin.html">
 
+<span>▦</span>
 
-            <div class="schedule-item">
+Schedules
 
-                <div class="time">
-                    16:30
-                </div>
+</a>
 
-                <div class="schedule-card">
-                    <h3>Free Time</h3>
-                    <p>📍 Campus</p>
-                </div>
+</nav>
 
-            </div>
 
+<script>
+
+/* =====================================================
+   DEFAULT DATA
+===================================================== */
+
+const defaultData = {
+
+employees: [
+
+{
+id: "james",
+name: "James Hall",
+
+schedules: {
+
+"2026-08-19": [
+
+{
+id: "j1",
+type: "activity",
+name: "Morning Registration",
+start: "09:00",
+end: "10:00",
+location: "Main Hall",
+group: "All Students"
+},
+
+{
+id: "j2",
+type: "activity",
+name: "English Classes",
+start: "10:00",
+end: "12:00",
+location: "Classroom 4",
+group: "Group B"
+},
+
+{
+id: "j3",
+type: "lunch",
+name: "Lunch Duty",
+start: "12:00",
+end: "14:00",
+location: "Dining Hall",
+group: ""
+},
+
+{
+id: "j4",
+type: "activity",
+name: "Sports Activities",
+start: "14:00",
+end: "16:00",
+location: "Basketball Court",
+group: "Group B"
+},
+
+{
+id: "j5",
+type: "dinner",
+name: "Dinner Duty",
+start: "18:00",
+end: "19:30",
+location: "Dining Hall",
+group: ""
+}
+
+]
+
+}
+
+},
+
+{
+id: "sarah",
+name: "Sarah Smith",
+
+schedules: {
+
+"2026-08-19": [
+
+{
+id: "s1",
+type: "activity",
+name: "English Classes",
+start: "09:00",
+end: "12:00",
+location: "Classroom 2",
+group: "Group A"
+},
+
+{
+id: "s2",
+type: "lunch",
+name: "Lunch Duty",
+start: "12:00",
+end: "14:00",
+location: "Dining Hall",
+group: ""
+},
+
+{
+id: "s3",
+type: "activity",
+name: "Arts & Crafts",
+start: "14:00",
+end: "16:00",
+location: "Art Room",
+group: "Group A"
+}
+
+]
+
+}
+
+},
+
+{
+id: "tom",
+name: "Tom Jones",
+
+schedules: {
+
+"2026-08-19": [
+
+{
+id: "t1",
+type: "activity",
+name: "Campus Games",
+start: "11:00",
+end: "13:00",
+location: "Sports Field",
+group: "Group C"
+},
+
+{
+id: "t2",
+type: "activity",
+name: "Sports Activities",
+start: "14:00",
+end: "17:00",
+location: "Sports Field",
+group: "Group C"
+},
+
+{
+id: "t3",
+type: "dinner",
+name: "Dinner Duty",
+start: "18:00",
+end: "20:00",
+location: "Dining Hall",
+group: ""
+}
+
+]
+
+}
+
+},
+
+{
+id: "emma",
+name: "Emma Brown",
+
+schedules: {
+
+"2026-08-19": [
+
+{
+id: "e1",
+type: "activity",
+name: "Arts & Crafts",
+start: "09:00",
+end: "11:00",
+location: "Art Room",
+group: "Group A"
+},
+
+{
+id: "e2",
+type: "activity",
+name: "Movie Preparation",
+start: "14:00",
+end: "16:00",
+location: "Common Room",
+group: "All Students"
+}
+
+]
+
+}
+
+}
+
+]
+
+};
 
-            <div class="schedule-item">
+
+/* =====================================================
+   LOAD DATA
+===================================================== */
+
+let data =
+JSON.parse(
+localStorage.getItem(
+"summerSchoolData"
+)
+) || defaultData;
+
+
+/* =====================================================
+   DATE
+===================================================== */
+
+/*
+For testing this uses today's date.
 
-                <div class="time">
-                    18:00
-                </div>
+If there is no schedule for today,
+the example data date is used instead.
+*/
 
-                <div class="schedule-card upcoming">
-                    <h3>Dinner Duty</h3>
-                    <p>📍 Dining Hall</p>
-                </div>
+const today =
+new Date();
 
-            </div>
+const selectedDate =
+today
+.toISOString()
+.substring(0,10);
 
 
-            <div class="schedule-item">
+function formatDate() {
 
-                <div class="time">
-                    20:00
-                </div>
+return today.toLocaleDateString(
+"en-GB",
+{
+weekday: "long",
+day: "numeric",
+month: "long",
+year: "numeric"
+}
+);
 
-                <div class="schedule-card">
-                    <h3>Movie Night</h3>
-                    <p>📍 Common Room</p>
-                </div>
+}
 
-            </div>
 
-        </div>
+/* =====================================================
+   TIME
+===================================================== */
 
+function timeToMinutes(time) {
 
-        <!-- Duties -->
-        <div class="section-title">
-            Your duties
-        </div>
+const parts =
+time.split(":");
 
-        <div class="duties">
+return (
+parseInt(parts[0]) * 60
++
+parseInt(parts[1])
+);
 
-            <div class="duty-card">
+}
 
-                <div class="duty-icon">
-                    🍽️
-                </div>
 
-                <h3>Lunch Duty</h3>
+/* =====================================================
+   GET CURRENT TIME
+===================================================== */
 
-                <p>
-                    12:00 – 14:00<br>
-                    Dining Hall
-                </p>
+function getCurrentMinutes() {
 
-                <div class="duty-status">
-                    ✓ COMPLETED
-                </div>
+return (
+today.getHours() * 60
++
+today.getMinutes()
+);
 
-            </div>
+}
 
 
-            <div class="duty-card dinner">
+/* =====================================================
+   FIND CURRENT / NEXT SHIFT
+===================================================== */
 
-                <div class="duty-icon">
-                    🍴
-                </div>
+function getStaffStatus(employee) {
 
-                <h3>Dinner Duty</h3>
+const schedule =
+employee.schedules &&
+employee.schedules[selectedDate]
+    ? employee.schedules[selectedDate]
+    : [];
 
-                <p>
-                    18:00 – 19:30<br>
-                    Dining Hall
-                </p>
 
-                <div class="duty-status">
-                    UPCOMING
-                </div>
+const now =
+getCurrentMinutes();
 
-            </div>
 
-        </div>
+/*
+Sort activities by start time.
+*/
 
+const sorted =
+[...schedule]
+.sort(
+(a,b) =>
+timeToMinutes(a.start)
+-
+timeToMinutes(b.start)
+);
 
-        <!-- Notice -->
-        <div class="section-title">
-            Important
-        </div>
 
-        <div class="notice">
+/*
+Find activity currently being worked.
+*/
 
-            <h3>📢 Staff briefing</h3>
+const current =
+sorted.find(item => {
 
-            <p>
-                Please meet in the staff room at 17:45
-                before dinner duty begins.
-            </p>
+const start =
+timeToMinutes(item.start);
 
-        </div>
+const end =
+timeToMinutes(item.end);
 
-    </main>
+return (
+now >= start &&
+now < end
+);
 
+});
 
-    <!-- Bottom navigation -->
-    <nav class="bottom-nav">
 
-        <a href="#" class="nav-item active">
-            <span>🏠</span>
-            Home
-        </a>
+if (current) {
 
-        <a href="#" class="nav-item">
-            <span>📅</span>
-            Schedule
-        </a>
+return {
 
-        <a href="#" class="nav-item">
-            <span>🍽️</span>
-            Duties
-        </a>
+status: "working",
 
-        <a href="#" class="nav-item">
-            <span>👤</span>
-            Profile
-        </a>
+item: current,
 
-    </nav>
+label: "Working now"
+
+};
+
+}
+
+
+/*
+Find next shift.
+*/
+
+const next =
+sorted.find(item => {
+
+return (
+timeToMinutes(item.start)
+>
+now
+);
+
+});
+
+
+if (next) {
+
+return {
+
+status: "working",
+
+item: next,
+
+label: "Next shift"
+
+};
+
+}
+
+
+/*
+Nothing else today.
+*/
+
+return {
+
+status: "off",
+
+item: null,
+
+label: "Not working"
+
+};
+
+}
+
+
+/* =====================================================
+   INITIALS
+===================================================== */
+
+function getInitials(name) {
+
+const parts =
+name
+.trim()
+.split(/\s+/);
+
+
+if (parts.length === 1) {
+
+return parts[0]
+.substring(0,2)
+.toUpperCase();
+
+}
+
+
+return (
+parts[0][0] +
+parts[parts.length - 1][0]
+).toUpperCase();
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(text) {
+
+return String(text || "")
+.replace(
+/&/g,
+"&amp;"
+)
+.replace(
+/</g,
+"&lt;"
+)
+.replace(
+/>/g,
+"&gt;"
+)
+.replace(
+/"/g,
+"&quot;"
+)
+.replace(
+/'/g,
+"&#039;"
+);
+
+}
+
+
+/* =====================================================
+   DISPLAY TIME
+===================================================== */
+
+function formatTime(time) {
+
+return time;
+
+
+/* =====================================================
+   STAFF CARDS
+===================================================== */
+
+function renderStaff() {
+
+const grid =
+document.getElementById(
+"staffGrid"
+);
+
+
+grid.innerHTML = "";
+
+
+if (!data.employees.length) {
+
+grid.innerHTML = `
+
+<div class="empty">
+
+    No staff members have been added yet.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+data.employees.forEach(
+employee => {
+
+
+const status =
+getStaffStatus(employee);
+
+
+const card =
+document.createElement("a");
+
+
+/*
+This takes the employee to
+their individual dashboard.
+
+We pass their ID in the URL.
+*/
+
+card.href =
+"staff.html?id=" +
+encodeURIComponent(
+employee.id
+);
+
+
+card.className =
+"staff-card";
+
+
+let shiftHtml = "";
+
+
+if (status.item) {
+
+shiftHtml = `
+
+<div class="next-shift">
+
+<div class="next-shift-label">
+
+${status.label}
+
+</div>
+
+<div class="next-shift-name">
+
+${escapeHtml(
+status.item.name
+)}
+
+</div>
+
+<div class="next-shift-time">
+
+${formatTime(
+status.item.start
+)}
+ –
+${formatTime(
+status.item.end
+)}
+
+</div>
+
+${
+status.item.location
+?
+`
+<div class="next-shift-location">
+
+📍
+${escapeHtml(
+status.item.location
+)}
+
+</div>
+`
+:
+""
+}
+
+</div>
+
+`;
+
+} else {
+
+shiftHtml = `
+
+<div class="off-message">
+
+No more scheduled shifts today
+
+</div>
+
+`;
+
+}
+
+
+card.innerHTML = `
+
+<div class="staff-header">
+
+
+<div class="avatar">
+
+${getInitials(
+employee.name
+)}
+
+</div>
+
+
+<div class="staff-name">
+
+<h2>
+
+${escapeHtml(
+employee.name
+)}
+
+</h2>
+
+<p>
+
+View today's schedule →
+
+</p>
+
+</div>
+
+
+<div class="status ${
+status.status === "working"
+? "status-working"
+: "status-off"
+}">
+
+<div class="status-dot"></div>
+
+${
+status.status === "working"
+? "Working"
+: "Off"
+}
+
+</div>
+
+
+</div>
+
+
+${shiftHtml}
+
+`;
+
+
+grid.appendChild(
+card
+);
+
+});
+
+}
+
+
+/* =====================================================
+   RENDER
+===================================================== */
+
+function render() {
+
+document.getElementById(
+"dateDisplay"
+).textContent =
+formatDate();
+
+
+renderStaff();
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+render();
+
+
+/*
+Refresh every minute so the
+working/off indicators update.
+*/
+
+setInterval(
+render,
+60000
+);
+
+</script>
 
 </body>
+
 </html>
