@@ -1,5 +1,923 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My Schedule</title><style>
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f3f5f8;color:#172033;padding-bottom:76px}header{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;padding:20px 18px}.wrap{max-width:760px;margin:auto}.back{color:#fff;text-decoration:none;font-size:13px}.eyebrow{font-size:11px;letter-spacing:1px;font-weight:700;opacity:.8;margin-top:15px}h1{margin:4px 0 0;font-size:27px}.container{max-width:760px;margin:auto;padding:16px}.card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 10px #0000000b;margin-bottom:14px}.date-tabs{display:flex;gap:7px;margin-bottom:12px}.tab{flex:1;border:0;border-radius:10px;padding:10px 6px;background:#e9edf3;font-weight:700;color:#4b5563}.tab.active{background:#2563eb;color:#fff}.status{display:flex;align-items:center;gap:12px}.bigdot{width:16px;height:16px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 5px #dcfce7}.bigdot.off{background:#ef4444;box-shadow:0 0 0 5px #fee2e2}.muted{color:#6b7280;font-size:12px;margin-top:4px}.section{font-weight:800;margin:20px 2px 9px}.shift{background:#fff;border-radius:15px;padding:14px;display:flex;gap:12px;border-left:5px solid #22c55e;box-shadow:0 2px 8px #00000009;margin-bottom:9px}.shift.lunch{border-left-color:#0ea5e9}.shift.dinner{border-left-color:#f59e0b}.shift.current{background:#f0fdf4;box-shadow:0 0 0 2px #bbf7d0}.time{width:62px;text-align:right;flex:none}.start{font-weight:800;font-size:13px}.end{font-size:11px;color:#9ca3af;margin-top:3px}.content{min-width:0}.title{font-weight:800;font-size:15px}.detail{font-size:12px;color:#6b7280;line-height:1.6;margin-top:4px}.pill{display:inline-block;background:#22c55e;color:#fff;border-radius:6px;padding:3px 6px;font-size:9px;font-weight:800;margin-bottom:6px}.empty{text-align:center;color:#8a93a3;padding:28px}.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}.summary>div{text-align:center;background:#fff;border-radius:14px;padding:15px}.num{font-size:20px;font-weight:800;color:#2563eb}.label{font-size:10px;color:#9ca3af;text-transform:uppercase;margin-top:3px}.nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:#fff;border-top:1px solid #e5e7eb;display:flex;justify-content:center;gap:70px;align-items:center}.nav a{color:#687386;text-decoration:none;text-align:center;font-size:11px}.nav span{display:block;font-size:20px}.nav .active{color:#2563eb}
-</style></head><body><header><div class="wrap"><a class="back" href="index.html">← All Staff</a><div class="eyebrow">SUMMER SCHOOL 2026</div><h1 id="name">My Schedule</h1></div></header><main class="container"><div class="card"><div class="date-tabs"><button class="tab active" data-day="0">Today</button><button class="tab" data-day="1">Tomorrow</button><button class="tab" data-day="2">Day after</button></div><div id="date"></div></div><div id="status" class="card"></div><div class="section">Schedule</div><div id="schedule"></div><div class="section">Summary</div><div id="summary" class="summary"></div></main><nav class="nav"><a class="active" href="index.html"><span>⌂</span>Staff</a><a href="admin.html"><span>▦</span>Admin</a></nav><script src="app.js"></script><script>
-const id=new URLSearchParams(location.search).get('id');let data=getData(),emp=data.employees.find(e=>e.id===id),offset=0;function render(){if(!emp)return;const d=addDays(TODAY,offset),list=getSchedule(emp,d),st=getStatus(emp,d);document.getElementById('name').textContent=emp.name;document.getElementById('date').textContent=formatDate(d);document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',+b.dataset.day===offset));document.getElementById('status').innerHTML=`<div class="status"><i class="bigdot ${st.working?'':'off'}"></i><div><strong>${st.current?'Working now':st.item?'Next shift: '+st.item.start:'Not working'}</strong><div class="muted">${st.item?esc(st.item.name):'No scheduled shifts for this day.'}</div></div></div>`;const box=document.getElementById('schedule');box.innerHTML='';if(!list.length)box.innerHTML='<div class="card empty">No shifts scheduled.</div>';list.forEach(x=>{const cur=st.current&&st.item.id===x.id,d=document.createElement('div');d.className=`shift ${x.type} ${cur?'current':''}`;d.innerHTML=`<div class="time"><div class="start">${x.start}</div><div class="end">${x.end}</div></div><div class="content">${cur?'<div class="pill">Working now</div>':''}<div class="title">${esc(x.name)}</div><div class="detail">${x.location?'📍 '+esc(x.location):''}${x.group?'<br>👥 '+esc(x.group):''}</div></div>`;box.appendChild(d)});const mins=list.reduce((a,x)=>a+minutes(x.end)-minutes(x.start),0);document.getElementById('summary').innerHTML=`<div><div class="num">${Math.floor(mins/60)}h${mins%60?' '+mins%60+'m':''}</div><div class="label">Scheduled hours</div></div><div><div class="num">${list.length}</div><div class="label">Shifts</div></div>`}if(!emp){document.getElementById('name').textContent='Staff Member';document.getElementById('status').innerHTML='<div class="empty">Staff member not found. Open this page from the staff overview.</div>'}document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{offset=+b.dataset.day;render()});render();setInterval(render,60000);
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+>
+
+<title>Staff Schedule</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    background: #f3f5f8;
+
+    color: #172033;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    padding-bottom: 75px;
+}
+
+header {
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4f46e5
+        );
+
+    color: white;
+
+    padding: 21px 18px;
+}
+
+.wrap {
+    max-width: 760px;
+
+    margin: auto;
+}
+
+.back {
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 13px;
+}
+
+.eyebrow {
+    margin-top: 15px;
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+    font-weight: 700;
+
+    opacity: .8;
+}
+
+h1 {
+    margin: 4px 0 0;
+
+    font-size: 27px;
+}
+
+.container {
+    max-width: 760px;
+
+    margin: auto;
+
+    padding: 16px;
+}
+
+.card {
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 16px;
+
+    box-shadow:
+        0 2px 10px rgba(0,0,0,.05);
+
+    margin-bottom: 14px;
+}
+
+.tabs {
+    display: flex;
+
+    gap: 7px;
+}
+
+.tab {
+    flex: 1;
+
+    border: 0;
+
+    border-radius: 10px;
+
+    padding: 10px 5px;
+
+    background: #e9edf3;
+
+    color: #4b5563;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.tab.active {
+    background: #2563eb;
+
+    color: white;
+}
+
+.status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+}
+
+.status-dot {
+    width: 16px;
+
+    height: 16px;
+
+    border-radius: 50%;
+}
+
+.status-dot.working {
+    background: #22c55e;
+
+    box-shadow:
+        0 0 0 5px #dcfce7;
+}
+
+.status-dot.off {
+    background: #ef4444;
+
+    box-shadow:
+        0 0 0 5px #fee2e2;
+}
+
+.status strong {
+    display: block;
+
+    font-size: 15px;
+}
+
+.muted {
+    color: #6b7280;
+
+    font-size: 12px;
+
+    margin-top: 4px;
+}
+
+.section {
+    font-weight: 800;
+
+    margin:
+        20px
+        2px
+        9px;
+}
+
+.shift {
+    background: white;
+
+    border-radius: 15px;
+
+    padding: 14px;
+
+    display: flex;
+
+    gap: 13px;
+
+    border-left:
+        5px solid #22c55e;
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.04);
+
+    margin-bottom: 9px;
+}
+
+.shift.excursion {
+    border-left-color:
+        #8b5cf6;
+}
+
+.shift.lunch {
+    border-left-color:
+        #0ea5e9;
+}
+
+.shift.dinner {
+    border-left-color:
+        #f59e0b;
+}
+
+.shift.duty {
+    border-left-color:
+        #64748b;
+}
+
+.shift.current {
+    background: #f0fdf4;
+
+    box-shadow:
+        0 0 0 2px #bbf7d0;
+}
+
+.time {
+    width: 63px;
+
+    text-align: right;
+
+    flex-shrink: 0;
+}
+
+.start {
+    font-weight: 800;
+
+    font-size: 13px;
+}
+
+.end {
+    font-size: 11px;
+
+    color: #9ca3af;
+
+    margin-top: 3px;
+}
+
+.content {
+    flex: 1;
+}
+
+.title {
+    font-weight: 800;
+
+    font-size: 15px;
+}
+
+.details {
+    color: #6b7280;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+    margin-top: 4px;
+}
+
+.current-label {
+    display: inline-block;
+
+    background: #22c55e;
+
+    color: white;
+
+    border-radius: 6px;
+
+    padding: 3px 6px;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    margin-bottom: 6px;
+}
+
+.empty {
+    text-align: center;
+
+    color: #8a93a3;
+
+    padding: 35px;
+}
+
+.summary {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 10px;
+}
+
+.summary-box {
+    background: white;
+
+    border-radius: 14px;
+
+    padding: 15px;
+
+    text-align: center;
+}
+
+.number {
+    font-size: 21px;
+
+    font-weight: 800;
+
+    color: #2563eb;
+}
+
+.label {
+    color: #9ca3af;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    margin-top: 3px;
+}
+
+.nav {
+    position: fixed;
+
+    bottom: 0;
+
+    left: 0;
+
+    right: 0;
+
+    height: 64px;
+
+    background: white;
+
+    border-top:
+        1px solid #e5e7eb;
+
+    display: flex;
+
+    justify-content:
+        center;
+
+    gap: 70px;
+
+    align-items: center;
+}
+
+.nav a {
+    text-decoration: none;
+
+    color: #687386;
+
+    text-align: center;
+
+    font-size: 11px;
+}
+
+.nav span {
+    display: block;
+
+    font-size: 20px;
+}
+
+.nav .active {
+    color: #2563eb;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<div class="wrap">
+
+<a
+    class="back"
+    href="index.html"
+>
+← All Staff
+</a>
+
+
+<div class="eyebrow">
+SUMMER SCHOOL 2026
+</div>
+
+
+<h1 id="name">
+Staff Schedule
+</h1>
+
+</div>
+
+</header>
+
+
+<main class="container">
+
+
+<div class="card">
+
+<div class="tabs">
+
+<button
+    class="tab active"
+    data-offset="0"
+>
+Today
+</button>
+
+
+<button
+    class="tab"
+    data-offset="1"
+>
+Tomorrow
+</button>
+
+
+<button
+    class="tab"
+    data-offset="2"
+>
+Day After
+</button>
+
+</div>
+
+
+<div
+    id="date"
+    style="
+        margin-top:12px;
+        font-size:13px;
+        font-weight:700;
+    "
+></div>
+
+</div>
+
+
+<div
+    id="status"
+    class="card"
+></div>
+
+
+<div class="section">
+Schedule
+</div>
+
+
+<div id="schedule"></div>
+
+
+<div class="section">
+Summary
+</div>
+
+
+<div
+    id="summary"
+    class="summary"
+></div>
+
+
+</main>
+
+
+<nav class="nav">
+
+<a
+    href="index.html"
+    class="active"
+>
+
+<span>⌂</span>
+
+Staff
+
+</a>
+
+
+<a href="admin.html">
+
+<span>▦</span>
+
+Admin
+
+</a>
+
+</nav>
+
+
+<script src="app.js"></script>
+
+
+<script>
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const staffId =
+    params.get("id");
+
+
+const staff =
+    getStaff(staffId);
+
+
+let offset = 0;
+
+
+/* =====================================================
+   RENDER
+===================================================== */
+
+function render() {
+
+    if (!staff) {
+
+        document.getElementById(
+            "name"
+        ).textContent =
+            "Staff Member";
+
+
+        document.getElementById(
+            "status"
+        ).innerHTML = `
+
+            <div class="empty">
+
+                Staff member not found.
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    const date =
+        addDays(
+            TODAY,
+            offset
+        );
+
+
+    const schedule =
+        getStaffSchedule(
+            staff.id,
+            date
+        );
+
+
+    const status =
+        getStaffStatus(
+            staff.id,
+            date
+        );
+
+
+    document.getElementById(
+        "name"
+    ).textContent =
+        staff.name;
+
+
+    document.getElementById(
+        "date"
+    ).textContent =
+        formatDate(date);
+
+
+    document
+        .querySelectorAll(".tab")
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+
+                Number(
+                    button.dataset.offset
+                ) === offset
+            );
+
+        });
+
+
+    /* STATUS */
+
+    document.getElementById(
+        "status"
+    ).innerHTML = `
+
+        <div class="status">
+
+            <div class="
+                status-dot
+                ${
+                    status.current
+                    ? "working"
+                    : status.next
+                    ? "working"
+                    : "off"
+                }
+            "></div>
+
+
+            <div>
+
+                <strong>
+
+                    ${
+                        status.current
+                        ?
+                        "Working now"
+
+                        :
+
+                        status.next
+                        ?
+                        `Next shift at ${status.next.start}`
+
+                        :
+
+                        "Not working"
+                    }
+
+                </strong>
+
+
+                <div class="muted">
+
+                    ${
+                        status.item
+                        ?
+                        esc(
+                            status.item.name
+                        )
+
+                        :
+
+                        "No scheduled shifts."
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    /* SCHEDULE */
+
+    const container =
+        document.getElementById(
+            "schedule"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (!schedule.length) {
+
+        container.innerHTML = `
+
+            <div class="card empty">
+
+                💤
+
+                <br><br>
+
+                No shifts scheduled.
+
+            </div>
+
+        `;
+
+    }
+
+
+    schedule.forEach(activity => {
+
+        const isCurrent =
+            status.current &&
+            status.current.id ===
+                activity.id;
+
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+
+        div.className =
+            `shift
+             ${activity.type}
+             ${isCurrent ? "current" : ""}`;
+
+
+        div.innerHTML = `
+
+            ${
+                isCurrent
+                ?
+
+                `
+
+                <div
+                    class="current-label"
+                >
+                    Working now
+                </div>
+
+                `
+
+                :
+
+                ""
+            }
+
+
+            <div class="time">
+
+                <div class="start">
+
+                    ${activity.start}
+
+                </div>
+
+                <div class="end">
+
+                    ${activity.end}
+
+                </div>
+
+            </div>
+
+
+            <div class="content">
+
+                <div class="title">
+
+                    ${esc(activity.name)}
+
+                </div>
+
+
+                <div class="details">
+
+                    ${
+                        activity.location
+                        ?
+                        `📍 ${esc(activity.location)}`
+                        :
+                        ""
+                    }
+
+
+                    ${
+                        activity.group
+                        ?
+                        `<br>👥 ${esc(activity.group)}`
+                        :
+                        ""
+                    }
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
+
+    /* SUMMARY */
+
+    const totalMinutes =
+        schedule.reduce(
+            (total, activity) =>
+                total +
+                (
+                    minutes(activity.end) -
+                    minutes(activity.start)
+                ),
+            0
+        );
+
+
+    const hours =
+        Math.floor(
+            totalMinutes / 60
+        );
+
+
+    const remaining =
+        totalMinutes % 60;
+
+
+    const hoursText =
+        remaining
+        ?
+        `${hours}h ${remaining}m`
+        :
+        `${hours}h`;
+
+
+    document.getElementById(
+        "summary"
+    ).innerHTML = `
+
+        <div class="summary-box">
+
+            <div class="number">
+
+                ${hoursText}
+
+            </div>
+
+            <div class="label">
+
+                Scheduled Hours
+
+            </div>
+
+        </div>
+
+
+        <div class="summary-box">
+
+            <div class="number">
+
+                ${schedule.length}
+
+            </div>
+
+            <div class="label">
+
+                Shifts
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   DATE BUTTONS
+===================================================== */
+
+document
+    .querySelectorAll(".tab")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                offset =
+                    Number(
+                        button.dataset.offset
+                    );
+
+                render();
+
+            }
+        );
+
+    });
+
+
+render();
+
+
+setInterval(
+    render,
+    60000
+);
+
+</script>
+
+</body>
+
+</html>
