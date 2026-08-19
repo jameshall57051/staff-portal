@@ -1,0 +1,1474 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summer School - Schedule Manager</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    background: #f4f6f9;
+    color: #1f2937;
+    padding-bottom: 80px;
+}
+
+/* HEADER */
+
+header {
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    color: white;
+    padding: 25px 20px;
+}
+
+.header-inner {
+    max-width: 850px;
+    margin: auto;
+}
+
+.header-small {
+    font-size: 12px;
+    opacity: .8;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+header h1 {
+    margin: 5px 0 0;
+    font-size: 26px;
+}
+
+/* MAIN */
+
+.container {
+    max-width: 850px;
+    margin: auto;
+    padding: 20px 15px;
+}
+
+/* PANELS */
+
+.panel {
+    background: white;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.05);
+}
+
+.panel h2 {
+    margin-top: 0;
+    font-size: 19px;
+}
+
+/* FORM */
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 14px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 11px;
+    margin-top: 6px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 14px;
+    background: white;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+/* DATE */
+
+.date-selector {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.date-selector button {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: #e0e7ff;
+    color: #2563eb;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.date-display {
+    text-align: center;
+    flex: 1;
+}
+
+.date-display small {
+    display: block;
+    color: #6b7280;
+    font-size: 11px;
+}
+
+.date-display strong {
+    font-size: 14px;
+}
+
+/* BUTTONS */
+
+button {
+    cursor: pointer;
+}
+
+.primary {
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 15px;
+    font-weight: 600;
+}
+
+.secondary {
+    background: #eef2f7;
+    color: #374151;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 15px;
+    font-weight: 600;
+}
+
+.danger {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+}
+
+.edit {
+    background: #e0e7ff;
+    color: #4338ca;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12px;
+}
+
+/* ADD BUTTONS */
+
+.add-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+/* SCHEDULE */
+
+.schedule-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.schedule-time {
+    width: 65px;
+    flex-shrink: 0;
+    text-align: right;
+    padding-top: 14px;
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.schedule-card {
+    flex: 1;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid #2563eb;
+    border-radius: 12px;
+    padding: 13px;
+}
+
+.schedule-card.lunch {
+    border-left-color: #0ea5e9;
+}
+
+.schedule-card.dinner {
+    border-left-color: #f59e0b;
+}
+
+.schedule-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.schedule-card h3 {
+    margin: 0 0 5px;
+    font-size: 15px;
+}
+
+.schedule-card p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.actions {
+    display: flex;
+    gap: 5px;
+    align-items: flex-start;
+}
+
+/* STAFF */
+
+.staff-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.staff-row:last-child {
+    border-bottom: none;
+}
+
+.add-staff {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.add-staff input {
+    margin: 0;
+}
+
+/* MODAL */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    z-index: 100;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
+.close {
+    border: none;
+    background: #f3f4f6;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    font-size: 22px;
+}
+
+.two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+/* EMPTY */
+
+.empty {
+    text-align: center;
+    padding: 30px 10px;
+    color: #9ca3af;
+    border: 1px dashed #d1d5db;
+    border-radius: 12px;
+}
+
+/* NAV */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 70px;
+}
+
+.bottom-nav a {
+    text-decoration: none;
+    color: #6b7280;
+    text-align: center;
+    font-size: 11px;
+}
+
+.bottom-nav a.active {
+    color: #2563eb;
+}
+
+.bottom-nav span {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 2px;
+}
+
+/* DESKTOP */
+
+@media (min-width: 700px) {
+
+    .modal {
+        align-items: center;
+    }
+
+    .modal-content {
+        border-radius: 20px;
+    }
+}
+
+/* MOBILE */
+
+@media (max-width: 500px) {
+
+    .schedule-top {
+        flex-direction: column;
+    }
+
+    .actions {
+        justify-content: flex-start;
+    }
+
+    .two-columns {
+        grid-template-columns: 1fr;
+    }
+
+    .add-staff {
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-inner">
+        <div class="header-small">SUMMER SCHOOL 2026</div>
+        <h1>Schedule Manager</h1>
+    </div>
+</header>
+
+
+<main class="container">
+
+
+    <!-- EMPLOYEE SELECTION -->
+
+    <div class="panel">
+
+        <h2>Staff member</h2>
+
+        <label>
+            Select employee
+
+            <select id="employeeSelect"></select>
+        </label>
+
+    </div>
+
+
+    <!-- DATE -->
+
+    <div class="panel">
+
+        <div class="date-selector">
+
+            <button onclick="changeDate(-1)">‹</button>
+
+            <div class="date-display">
+                <small>Editing schedule for</small>
+                <strong id="dateDisplay"></strong>
+            </div>
+
+            <button onclick="changeDate(1)">›</button>
+
+        </div>
+
+
+        <!-- ADD BUTTONS -->
+
+        <div class="add-buttons">
+
+            <button class="primary" onclick="openModal('activity')">
+                ＋ Activity
+            </button>
+
+            <button class="secondary" onclick="openModal('lunch')">
+                🍽 Lunch Duty
+            </button>
+
+            <button class="secondary" onclick="openModal('dinner')">
+                🍴 Dinner Duty
+            </button>
+
+        </div>
+
+
+        <!-- SCHEDULE -->
+
+        <div id="schedule"></div>
+
+    </div>
+
+
+    <!-- STAFF MANAGEMENT -->
+
+    <div class="panel">
+
+        <h2>Staff members</h2>
+
+        <p style="color:#6b7280;font-size:13px;">
+            Add or remove employees from the system.
+        </p>
+
+        <div id="staffList"></div>
+
+        <div class="add-staff">
+
+            <input
+                id="newEmployee"
+                placeholder="New employee name"
+            >
+
+            <button class="primary" onclick="addEmployee()">
+                Add employee
+            </button>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- EDIT MODAL -->
+
+<div id="modal" class="modal hidden">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2 id="modalTitle">
+                Add Activity
+            </h2>
+
+            <button
+                class="close"
+                onclick="closeModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="scheduleForm">
+
+            <input
+                type="hidden"
+                id="editingId"
+            >
+
+
+            <label>
+
+                Type
+
+                <select id="type">
+
+                    <option value="activity">
+                        Activity
+                    </option>
+
+                    <option value="lunch">
+                        Lunch Duty
+                    </option>
+
+                    <option value="dinner">
+                        Dinner Duty
+                    </option>
+
+                </select>
+
+            </label>
+
+
+            <label>
+
+                Activity / Duty Name
+
+                <input
+                    id="name"
+                    required
+                    placeholder="Sports Activities"
+                >
+
+            </label>
+
+
+            <div class="two-columns">
+
+                <label>
+
+                    Start time
+
+                    <input
+                        id="start"
+                        type="time"
+                        required
+                    >
+
+                </label>
+
+
+                <label>
+
+                    End time
+
+                    <input
+                        id="end"
+                        type="time"
+                        required
+                    >
+
+                </label>
+
+            </div>
+
+
+            <label>
+
+                Location
+
+                <input
+                    id="location"
+                    placeholder="Basketball Court"
+                >
+
+            </label>
+
+
+            <label>
+
+                Student Group
+
+                <input
+                    id="group"
+                    placeholder="Group B"
+                >
+
+            </label>
+
+
+            <div class="modal-buttons">
+
+                <button
+                    type="button"
+                    class="secondary"
+                    onclick="closeModal()">
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="primary">
+                    Save
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- NAVIGATION -->
+
+<nav class="bottom-nav">
+
+    <a href="index.html">
+        <span>⌂</span>
+        Dashboard
+    </a>
+
+    <a href="admin.html" class="active">
+        <span>✎</span>
+        Manage
+    </a>
+
+</nav>
+
+
+<script>
+
+/* =========================================================
+   DEMO DATA
+   ========================================================= */
+
+const defaultData = {
+
+    employees: [
+
+        {
+            id: "james",
+            name: "James Hall",
+
+            schedules: {
+
+                "2026-08-19": [
+
+                    {
+                        id: "1",
+                        type: "activity",
+                        name: "Morning Registration",
+                        start: "09:00",
+                        end: "10:00",
+                        location: "Main Hall",
+                        group: "All Students"
+                    },
+
+                    {
+                        id: "2",
+                        type: "activity",
+                        name: "English Classes",
+                        start: "10:00",
+                        end: "12:00",
+                        location: "Classroom 4",
+                        group: "Group B"
+                    },
+
+                    {
+                        id: "3",
+                        type: "lunch",
+                        name: "Lunch Duty",
+                        start: "12:00",
+                        end: "14:00",
+                        location: "Dining Hall",
+                        group: ""
+                    },
+
+                    {
+                        id: "4",
+                        type: "activity",
+                        name: "Sports Activities",
+                        start: "14:00",
+                        end: "16:00",
+                        location: "Basketball Court",
+                        group: "Group B"
+                    },
+
+                    {
+                        id: "5",
+                        type: "activity",
+                        name: "Free Time",
+                        start: "16:30",
+                        end: "18:00",
+                        location: "Campus",
+                        group: "All Students"
+                    },
+
+                    {
+                        id: "6",
+                        type: "dinner",
+                        name: "Dinner Duty",
+                        start: "18:00",
+                        end: "19:30",
+                        location: "Dining Hall",
+                        group: ""
+                    },
+
+                    {
+                        id: "7",
+                        type: "activity",
+                        name: "Movie Night",
+                        start: "20:00",
+                        end: "22:00",
+                        location: "Common Room",
+                        group: "All Students"
+                    }
+
+                ]
+
+            }
+        },
+
+
+        {
+            id: "sarah",
+            name: "Sarah Smith",
+
+            schedules: {
+
+                "2026-08-19": [
+
+                    {
+                        id: "8",
+                        type: "activity",
+                        name: "Morning Registration",
+                        start: "09:00",
+                        end: "10:00",
+                        location: "Main Hall",
+                        group: "All Students"
+                    },
+
+                    {
+                        id: "9",
+                        type: "activity",
+                        name: "Arts & Crafts",
+                        start: "10:00",
+                        end: "12:00",
+                        location: "Art Room",
+                        group: "Group A"
+                    },
+
+                    {
+                        id: "10",
+                        type: "lunch",
+                        name: "Lunch Duty",
+                        start: "12:00",
+                        end: "14:00",
+                        location: "Dining Hall",
+                        group: ""
+                    },
+
+                    {
+                        id: "11",
+                        type: "activity",
+                        name: "Campus Games",
+                        start: "14:00",
+                        end: "16:00",
+                        location: "Sports Field",
+                        group: "Group A"
+                    },
+
+                    {
+                        id: "12",
+                        type: "dinner",
+                        name: "Dinner Duty",
+                        start: "18:00",
+                        end: "19:30",
+                        location: "Dining Hall",
+                        group: ""
+                    }
+
+                ]
+
+            }
+        }
+
+    ]
+
+};
+
+
+/* =========================================================
+   LOAD / SAVE
+   ========================================================= */
+
+let data =
+    JSON.parse(
+        localStorage.getItem("summerSchoolData")
+    ) || defaultData;
+
+
+let employeeId =
+    localStorage.getItem("selectedEmployee")
+    || data.employees[0].id;
+
+
+let selectedDate = "2026-08-19";
+
+
+function saveData() {
+
+    localStorage.setItem(
+        "summerSchoolData",
+        JSON.stringify(data)
+    );
+
+}
+
+
+/* =========================================================
+   EMPLOYEE
+   ========================================================= */
+
+function getEmployee() {
+
+    return data.employees.find(
+        employee => employee.id === employeeId
+    );
+
+}
+
+
+function populateEmployees() {
+
+    const select =
+        document.getElementById("employeeSelect");
+
+    select.innerHTML = "";
+
+    data.employees.forEach(employee => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = employee.id;
+
+        option.textContent = employee.name;
+
+        if (employee.id === employeeId) {
+            option.selected = true;
+        }
+
+        select.appendChild(option);
+
+    });
+
+}
+
+
+document
+    .getElementById("employeeSelect")
+    .addEventListener("change", function() {
+
+        employeeId = this.value;
+
+        localStorage.setItem(
+            "selectedEmployee",
+            employeeId
+        );
+
+        render();
+
+    });
+
+
+/* =========================================================
+   DATE
+   ========================================================= */
+
+function changeDate(days) {
+
+    const date =
+        new Date(selectedDate + "T12:00:00");
+
+    date.setDate(
+        date.getDate() + days
+    );
+
+    selectedDate =
+        date.toISOString().substring(0,10);
+
+    render();
+
+}
+
+
+function displayDate() {
+
+    const date =
+        new Date(selectedDate + "T12:00:00");
+
+    return date.toLocaleDateString(
+        "en-GB",
+        {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SCHEDULE
+   ========================================================= */
+
+function getSchedule() {
+
+    const employee = getEmployee();
+
+    if (!employee.schedules) {
+        employee.schedules = {};
+    }
+
+    if (!employee.schedules[selectedDate]) {
+        employee.schedules[selectedDate] = [];
+    }
+
+    return employee.schedules[selectedDate];
+
+}
+
+
+function renderSchedule() {
+
+    const schedule =
+        getSchedule()
+        .sort((a,b) =>
+            a.start.localeCompare(b.start)
+        );
+
+    const container =
+        document.getElementById("schedule");
+
+    container.innerHTML = "";
+
+
+    if (schedule.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty">
+                Nothing scheduled for this day.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    schedule.forEach(item => {
+
+        const row =
+            document.createElement("div");
+
+        row.className = "schedule-item";
+
+
+        const cardClass =
+            item.type === "lunch"
+                ? "lunch"
+                : item.type === "dinner"
+                    ? "dinner"
+                    : "";
+
+
+        row.innerHTML = `
+
+            <div class="schedule-time">
+                ${item.start}
+            </div>
+
+            <div class="schedule-card ${cardClass}">
+
+                <div class="schedule-top">
+
+                    <div>
+
+                        <h3>
+                            ${escapeHtml(item.name)}
+                        </h3>
+
+                        <p>
+                            ${item.start}
+                            –
+                            ${item.end}
+                            <br>
+
+                            📍
+                            ${escapeHtml(item.location || "No location")}
+
+                            ${
+                                item.group
+                                ?
+                                `<br>👥 ${escapeHtml(item.group)}`
+                                :
+                                ""
+                            }
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="actions">
+
+                        <button
+                            class="edit"
+                            onclick="editItem('${item.id}')">
+                            Edit
+                        </button>
+
+                        <button
+                            class="danger"
+                            onclick="deleteItem('${item.id}')">
+                            Delete
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(row);
+
+    });
+
+}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+function openModal(type, item = null) {
+
+    document
+        .getElementById("modal")
+        .classList.remove("hidden");
+
+
+    document.getElementById("editingId").value =
+        item ? item.id : "";
+
+
+    document.getElementById("type").value =
+        item
+            ? item.type
+            : type;
+
+
+    document.getElementById("name").value =
+        item
+            ? item.name
+            : type === "lunch"
+                ? "Lunch Duty"
+                : type === "dinner"
+                    ? "Dinner Duty"
+                    : "";
+
+
+    document.getElementById("start").value =
+        item
+            ? item.start
+            : type === "lunch"
+                ? "12:00"
+                : type === "dinner"
+                    ? "18:00"
+                    : "14:00";
+
+
+    document.getElementById("end").value =
+        item
+            ? item.end
+            : type === "lunch"
+                ? "14:00"
+                : type === "dinner"
+                    ? "19:30"
+                    : "16:00";
+
+
+    document.getElementById("location").value =
+        item
+            ? item.location
+            : type === "lunch" || type === "dinner"
+                ? "Dining Hall"
+                : "";
+
+
+    document.getElementById("group").value =
+        item
+            ? item.group
+            : "";
+
+}
+
+
+function closeModal() {
+
+    document
+        .getElementById("modal")
+        .classList.add("hidden");
+
+}
+
+
+/* =========================================================
+   SAVE ACTIVITY
+   ========================================================= */
+
+document
+    .getElementById("scheduleForm")
+    .addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+
+        const schedule =
+            getSchedule();
+
+
+        const id =
+            document.getElementById("editingId").value;
+
+
+        const item = {
+
+            id:
+                id ||
+                "item-" +
+                Date.now(),
+
+            type:
+                document.getElementById("type").value,
+
+            name:
+                document.getElementById("name").value,
+
+            start:
+                document.getElementById("start").value,
+
+            end:
+                document.getElementById("end").value,
+
+            location:
+                document.getElementById("location").value,
+
+            group:
+                document.getElementById("group").value
+
+        };
+
+
+        const existing =
+            schedule.findIndex(
+                x => x.id === id
+            );
+
+
+        if (existing >= 0) {
+
+            schedule[existing] = item;
+
+        } else {
+
+            schedule.push(item);
+
+        }
+
+
+        saveData();
+
+        closeModal();
+
+        render();
+
+    });
+
+
+/* =========================================================
+   EDIT
+   ========================================================= */
+
+function editItem(id) {
+
+    const item =
+        getSchedule()
+            .find(x => x.id === id);
+
+    if (item) {
+
+        openModal(
+            item.type,
+            item
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DELETE
+   ========================================================= */
+
+function deleteItem(id) {
+
+    if (
+        !confirm(
+            "Are you sure you want to delete this item?"
+        )
+    ) {
+        return;
+    }
+
+
+    const employee =
+        getEmployee();
+
+
+    employee.schedules[selectedDate] =
+        getSchedule()
+            .filter(item => item.id !== id);
+
+
+    saveData();
+
+    render();
+
+}
+
+
+/* =========================================================
+   STAFF
+   ========================================================= */
+
+function renderStaff() {
+
+    const container =
+        document.getElementById("staffList");
+
+    container.innerHTML = "";
+
+
+    data.employees.forEach(employee => {
+
+        const row =
+            document.createElement("div");
+
+        row.className = "staff-row";
+
+
+        row.innerHTML = `
+
+            <strong>
+                ${escapeHtml(employee.name)}
+            </strong>
+
+            ${
+                data.employees.length > 1
+                ?
+                `<button
+                    class="danger"
+                    onclick="removeEmployee('${employee.id}')">
+                    Remove
+                </button>`
+                :
+                ""
+            }
+
+        `;
+
+
+        container.appendChild(row);
+
+    });
+
+}
+
+
+function addEmployee() {
+
+    const input =
+        document.getElementById("newEmployee");
+
+
+    const name =
+        input.value.trim();
+
+
+    if (!name) {
+
+        alert(
+            "Please enter an employee name."
+        );
+
+        return;
+
+    }
+
+
+    const id =
+        name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            +
+        "-" +
+        Date.now();
+
+
+    data.employees.push({
+
+        id: id,
+
+        name: name,
+
+        schedules: {}
+
+    });
+
+
+    employeeId = id;
+
+
+    input.value = "";
+
+
+    saveData();
+
+    populateEmployees();
+
+    renderStaff();
+
+    renderSchedule();
+
+}
+
+
+function removeEmployee(id) {
+
+    const employee =
+        data.employees.find(
+            e => e.id === id
+        );
+
+
+    if (
+        !confirm(
+            `Remove ${employee.name}?`
+        )
+    ) {
+        return;
+    }
+
+
+    data.employees =
+        data.employees.filter(
+            e => e.id !== id
+        );
+
+
+    employeeId =
+        data.employees[0].id;
+
+
+    saveData();
+
+    populateEmployees();
+
+    renderStaff();
+
+    renderSchedule();
+
+}
+
+
+/* =========================================================
+   SECURITY / TEXT SAFETY
+   ========================================================= */
+
+function escapeHtml(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+
+function render() {
+
+    document.getElementById(
+        "dateDisplay"
+    ).textContent =
+        displayDate();
+
+
+    populateEmployees();
+
+    renderSchedule();
+
+    renderStaff();
+
+}
+
+
+render();
+
+</script>
+
+</body>
+</html>
+```
