@@ -1,5 +1,1398 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Summer School Admin</title><style>
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f3f5f8;color:#172033;padding-bottom:30px}header{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;padding:22px 18px}.wrap{max-width:1100px;margin:auto}.eyebrow{font-size:11px;letter-spacing:1px;font-weight:700;opacity:.8}h1{margin:5px 0 0;font-size:25px}.container{max-width:1100px;margin:auto;padding:16px}.toolbar{background:#fff;border-radius:15px;padding:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px;box-shadow:0 2px 8px #00000009}.btn,input,select{border:1px solid #dfe4ea;border-radius:9px;padding:9px 11px;background:#fff;font:inherit}.btn{cursor:pointer;font-weight:700}.primary{background:#2563eb;color:#fff;border-color:#2563eb}.danger{color:#b91c1c;border-color:#fecaca}.table-wrap{overflow:auto;background:#fff;border-radius:15px;box-shadow:0 2px 10px #00000009}.table{min-width:820px}.row{display:grid;grid-template-columns:190px repeat(4,1fr);border-bottom:1px solid #edf0f3}.cell{padding:12px;border-right:1px solid #edf0f3;min-height:80px}.head{font-weight:800;background:#f8fafc;min-height:auto}.person{display:flex;gap:9px;align-items:center;font-weight:800}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#e0e7ff;color:#3730a3;font-size:11px}.shift{border-radius:10px;padding:8px;margin:3px 0;cursor:pointer}.shift.work{background:#dcfce7;color:#166534}.shift.lunch{background:#e0f2fe;color:#075985}.shift.dinner{background:#fef3c7;color:#92400e}.off{color:#9ca3af;font-size:12px}.small{font-size:11px;color:#6b7280;margin-top:3px}.modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;justify-content:center;padding:10px;z-index:10}.modal.show{display:flex}.modal-box{background:#fff;width:min(520px,100%);border-radius:18px 18px 12px 12px;padding:18px}.modal-box h2{margin:0 0 14px}.form{display:grid;gap:10px}.form label{font-size:11px;font-weight:700;color:#6b7280}.form input,.form select{width:100%}.actions{display:flex;gap:8px;margin-top:12px}.actions>*{flex:1}.staff-list{display:flex;gap:8px;flex-wrap:wrap}.staff-chip{padding:8px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;cursor:pointer;border:0;font-weight:700;font-size:12px}.hint{font-size:11px;color:#6b7280}@media(max-width:700px){.toolbar>*{flex:1}.staff-list{flex-basis:100%}}
-</style></head><body><header><div class="wrap"><div class="eyebrow">SUMMER SCHOOL 2026</div><h1>Schedule Admin</h1></div></header><main class="container"><div class="toolbar"><input id="date" type="date"><button class="btn primary" onclick="addShift()">＋ Add shift</button><button class="btn" onclick="copyDay()">Copy this day</button><button class="btn danger" onclick="clearDay()">Clear this day</button><div id="staffList" class="staff-list"></div></div><div class="table-wrap"><div id="table" class="table"></div></div></main><div id="modal" class="modal"><div class="modal-box"><h2 id="modalTitle">Add shift</h2><div class="form"><div><label>Staff member</label><select id="employee"></select></div><div><label>Type</label><select id="type"><option value="activity">Activity</option><option value="lunch">Lunch duty</option><option value="dinner">Dinner duty</option></select></div><div><label>Activity / duty</label><input id="activity" placeholder="e.g. Sports Activities"></div><div><label>Start</label><input id="start" type="time"></div><div><label>End</label><input id="end" type="time"></div><div><label>Location</label><input id="location" placeholder="e.g. Basketball Court"></div><div><label>Group</label><input id="group" placeholder="e.g. Group B"></div></div><div class="actions"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn danger" id="deleteBtn" onclick="deleteShift()">Delete</button><button class="btn primary" onclick="saveShift()">Save</button></div></div></div><script src="app.js"></script><script>
-let data=getData(),editing=null;const date=document.getElementById('date');date.value=key(TODAY);date.onchange=render;function initials(n){return n.split(/\s+/).map(x=>x[0]).slice(0,2).join('').toUpperCase()}function periodFor(t){const h=+t.split(':')[0];return h<12?'morning':h<14?'midday':h<18?'afternoon':'evening'}function render(){data=getData();const d=date.value,table=document.getElementById('table');document.getElementById('staffList').innerHTML=data.employees.map(e=>`<button class="staff-chip" onclick="openFor('${e.id}')">${esc(e.name)}</button>`).join('');let html='<div class="row"><div class="cell head">Staff</div><div class="cell head">Morning</div><div class="cell head">Midday</div><div class="cell head">Afternoon</div><div class="cell head">Evening</div></div>';data.employees.forEach(e=>{const list=getSchedule(e,parseKey(d));html+=`<div class="row"><div class="cell"><div class="person"><div class="avatar">${initials(e.name)}</div>${esc(e.name)}</div></div>`;['morning','midday','afternoon','evening'].forEach(p=>{const items=list.filter(x=>periodFor(x.start)===p);html+=`<div class="cell">${items.length?items.map(x=>`<div class="shift ${x.type==='lunch'?'lunch':x.type==='dinner'?'dinner':'work'}" onclick="editShift('${e.id}','${x.id}')"><b>${esc(x.name)}</b><div class="small">${x.start}–${x.end}</div>${x.location?'<div class="small">📍 '+esc(x.location)+'</div>':''}</div>`).join(''):'<div class="off">—</div>'}</div>`});html+='</div>'});table.innerHTML=html}function fillEmployee(){document.getElementById('employee').innerHTML=data.employees.map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('')}function openFor(id){fillEmployee();document.getElementById('employee').value=id;addShift()}function addShift(){editing=null;fillEmployee();document.getElementById('modalTitle').textContent='Add shift';document.getElementById('deleteBtn').style.display='none';['activity','start','end','location','group'].forEach(x=>document.getElementById(x).value='');document.getElementById('type').value='activity';document.getElementById('modal').classList.add('show')}function editShift(eid,sid){editing={eid,sid};fillEmployee();const e=data.employees.find(x=>x.id===eid),x=getSchedule(e,parseKey(date.value)).find(x=>x.id===sid);document.getElementById('employee').value=eid;document.getElementById('modalTitle').textContent='Edit shift';document.getElementById('deleteBtn').style.display='block';document.getElementById('type').value=x.type;document.getElementById('activity').value=x.name;document.getElementById('start').value=x.start;document.getElementById('end').value=x.end;document.getElementById('location').value=x.location||'';document.getElementById('group').value=x.group||'';document.getElementById('modal').classList.add('show')}function closeModal(){document.getElementById('modal').classList.remove('show')}function saveShift(){const eid=document.getElementById('employee').value,e=data.employees.find(x=>x.id===eid);if(!e.schedules)e.schedules={};if(!e.schedules[date.value])e.schedules[date.value]=[];const x={id:editing?editing.sid:'s'+Date.now(),type:document.getElementById('type').value,name:document.getElementById('activity').value.trim(),start:document.getElementById('start').value,end:document.getElementById('end').value,location:document.getElementById('location').value.trim(),group:document.getElementById('group').value.trim()};if(!x.name||!x.start||!x.end){alert('Please complete activity, start and end.');return}if(minutes(x.end)<=minutes(x.start)){alert('End time must be after start time.');return}if(editing){const old=data.employees.find(z=>z.id===editing.eid);old.schedules[date.value]=(old.schedules[date.value]||[]).filter(z=>z.id!==editing.sid);e.schedules[date.value].push(x)}else e.schedules[date.value].push(x);saveData(data);closeModal();render()}function deleteShift(){if(!editing||!confirm('Delete this shift?'))return;const e=data.employees.find(x=>x.id===editing.eid);e.schedules[date.value]=(e.schedules[date.value]||[]).filter(x=>x.id!==editing.sid);saveData(data);closeModal();render()}function copyDay(){const target=prompt('Copy this day to which date? Use YYYY-MM-DD.');if(!target||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(target)||target===date.value)return;data.employees.forEach(e=>{if(!e.schedules)e.schedules={};e.schedules[target]=JSON.parse(JSON.stringify(e.schedules[date.value]||[])).map(x=>({...x,id:'s'+Date.now()+Math.random()}))});saveData(data);alert('Day copied.');render()}function clearDay(){if(!confirm('Clear every staff member’s schedule for '+date.value+'?'))return;data.employees.forEach(e=>{if(e.schedules)e.schedules[date.value]=[]});saveData(data);render()}render();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+>
+
+<title>Summer School Admin</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f3f5f8;
+    color: #172033;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+}
+
+header {
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4f46e5
+        );
+
+    color: white;
+
+    padding: 24px 18px;
+}
+
+.wrap {
+    max-width: 850px;
+    margin: auto;
+}
+
+.eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: .8;
+}
+
+h1 {
+    margin: 5px 0 0;
+    font-size: 27px;
+}
+
+.container {
+    max-width: 850px;
+    margin: auto;
+    padding: 16px;
+}
+
+.toolbar {
+    background: white;
+    border-radius: 16px;
+    padding: 14px;
+
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+
+    box-shadow:
+        0 2px 10px rgba(0,0,0,.05);
+
+    margin-bottom: 16px;
+}
+
+input,
+select,
+button {
+    font: inherit;
+}
+
+input,
+select {
+    border:
+        1px solid #dfe4ea;
+
+    border-radius: 10px;
+
+    padding: 10px;
+}
+
+button {
+    border: 0;
+
+    border-radius: 10px;
+
+    padding: 10px 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.primary {
+    background: #2563eb;
+    color: white;
+}
+
+.secondary {
+    background: #eef2ff;
+    color: #3730a3;
+}
+
+.danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.date {
+    flex: 1;
+    min-width: 180px;
+}
+
+.activity {
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 16px;
+
+    margin-bottom: 12px;
+
+    box-shadow:
+        0 2px 10px rgba(0,0,0,.05);
+}
+
+.activity-top {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.activity-icon {
+    width: 44px;
+    height: 44px;
+
+    border-radius: 12px;
+
+    display: grid;
+    place-items: center;
+
+    font-size: 21px;
+
+    background: #dcfce7;
+}
+
+.activity-info {
+    flex: 1;
+}
+
+.activity-name {
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.activity-time {
+    color: #6b7280;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.activity-details {
+    color: #6b7280;
+    font-size: 12px;
+    line-height: 1.6;
+    margin-top: 8px;
+}
+
+.staff-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    margin-top: 13px;
+}
+
+.staff-chip {
+    background: #eef2ff;
+
+    color: #3730a3;
+
+    border-radius: 999px;
+
+    padding: 6px 9px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.actions {
+    display: flex;
+    gap: 7px;
+
+    margin-top: 13px;
+}
+
+.actions button {
+    flex: 1;
+}
+
+.empty {
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 45px 20px;
+
+    text-align: center;
+
+    color: #8a93a3;
+}
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,.55);
+
+    display: none;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    padding: 10px;
+
+    z-index: 100;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-box {
+    width: min(550px, 100%);
+
+    background: white;
+
+    border-radius:
+        20px
+        20px
+        12px
+        12px;
+
+    padding: 20px;
+
+    max-height: 92vh;
+
+    overflow-y: auto;
+}
+
+.modal-box h2 {
+    margin: 0 0 18px;
+}
+
+.form {
+    display: grid;
+
+    gap: 12px;
+}
+
+.form label {
+    display: block;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    color: #6b7280;
+
+    margin-bottom: 5px;
+}
+
+.form input,
+.form select {
+    width: 100%;
+}
+
+.time-row {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 10px;
+}
+
+.staff-heading {
+    margin-top: 5px;
+
+    font-size: 13px;
+
+    font-weight: 800;
+}
+
+.staff-checkboxes {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 7px;
+}
+
+.staff-check {
+    border:
+        1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    padding: 10px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+.staff-check:has(input:checked) {
+    background: #eff6ff;
+
+    border-color: #93c5fd;
+
+    color: #1d4ed8;
+}
+
+.modal-actions {
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 18px;
+}
+
+.modal-actions button {
+    flex: 1;
+}
+
+@media(max-width:500px) {
+
+    .staff-checkboxes {
+        grid-template-columns: 1fr;
+    }
+
+    .time-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+<div class="wrap">
+
+<div class="eyebrow">
+SUMMER SCHOOL 2026
+</div>
+
+<h1>
+Activities & Excursions
+</h1>
+
+</div>
+
+</header>
+
+
+<main class="container">
+
+
+<div class="toolbar">
+
+<input
+    id="date"
+    class="date"
+    type="date"
+>
+
+<button
+    class="primary"
+    onclick="openAdd()"
+>
+＋ Add Activity
+</button>
+
+<button
+    class="secondary"
+    onclick="copyDay()"
+>
+Copy Day
+</button>
+
+<button
+    class="danger"
+    onclick="clearDay()"
+>
+Clear Day
+</button>
+
+</div>
+
+
+<div id="activities"></div>
+
+
+</main>
+
+
+<div
+    id="modal"
+    class="modal"
+>
+
+<div class="modal-box">
+
+
+<h2 id="modalTitle">
+Add Activity
+</h2>
+
+
+<div class="form">
+
+
+<div>
+
+<label>
+Activity / Excursion
+</label>
+
+<input
+    id="name"
+    placeholder="e.g. Cambridge Trip"
+>
+
+</div>
+
+
+<div>
+
+<label>
+Type
+</label>
+
+<select id="type">
+
+<option value="activity">
+Activity
+</option>
+
+<option value="excursion">
+Excursion
+</option>
+
+<option value="lunch">
+Lunch Duty
+</option>
+
+<option value="dinner">
+Dinner Duty
+</option>
+
+<option value="duty">
+Staff Duty
+</option>
+
+</select>
+
+</div>
+
+
+<div class="time-row">
+
+<div>
+
+<label>
+Start
+</label>
+
+<input
+    id="start"
+    type="time"
+>
+
+</div>
+
+
+<div>
+
+<label>
+End
+</label>
+
+<input
+    id="end"
+    type="time"
+>
+
+</div>
+
+</div>
+
+
+<div>
+
+<label>
+Location
+</label>
+
+<input
+    id="location"
+    placeholder="e.g. Cambridge"
+>
+
+</div>
+
+
+<div>
+
+<label>
+Group
+</label>
+
+<input
+    id="group"
+    placeholder="e.g. Group A"
+>
+
+</div>
+
+
+<div class="staff-heading">
+
+Staff Assigned
+
+</div>
+
+
+<div
+    id="staffCheckboxes"
+    class="staff-checkboxes"
+></div>
+
+
+</div>
+
+
+<div class="modal-actions">
+
+<button
+    class="secondary"
+    onclick="closeModal()"
+>
+Cancel
+</button>
+
+
+<button
+    id="deleteButton"
+    class="danger"
+    onclick="deleteActivity()"
+>
+Delete
+</button>
+
+
+<button
+    class="primary"
+    onclick="saveActivity()"
+>
+Save Activity
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<script src="app.js"></script>
+
+
+<script>
+
+let data = getData();
+
+let editingId = null;
+
+
+const dateInput =
+    document.getElementById("date");
+
+
+dateInput.value =
+    dateKey(TODAY);
+
+
+dateInput.addEventListener(
+    "change",
+    render
+);
+
+
+/* =====================================================
+   ICON
+===================================================== */
+
+function iconFor(type) {
+
+    if (type === "excursion")
+        return "🚌";
+
+    if (type === "lunch")
+        return "🍽️";
+
+    if (type === "dinner")
+        return "🍽️";
+
+    if (type === "duty")
+        return "📋";
+
+    return "🟢";
+}
+
+
+/* =====================================================
+   RENDER
+===================================================== */
+
+function render() {
+
+    data = getData();
+
+    const date =
+        dateInput.value;
+
+    const activities =
+        data.activities
+            .filter(
+                activity =>
+                    activity.date === date
+            )
+            .sort(
+                (a,b) =>
+                    minutes(a.start) -
+                    minutes(b.start)
+            );
+
+
+    const container =
+        document.getElementById(
+            "activities"
+        );
+
+
+    if (!activities.length) {
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                <div style="
+                    font-size:35px;
+                    margin-bottom:10px;
+                ">
+                    📅
+                </div>
+
+                <strong>
+                    No activities scheduled
+                </strong>
+
+                <div style="
+                    margin-top:5px;
+                    font-size:12px;
+                ">
+                    Add an activity or excursion
+                    to get started.
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    activities.forEach(activity => {
+
+        const staff =
+            activity.staff
+                .map(id =>
+                    data.staff.find(
+                        person =>
+                            person.id === id
+                    )
+                )
+                .filter(Boolean);
+
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+
+        div.className =
+            "activity";
+
+
+        div.innerHTML = `
+
+            <div class="activity-top">
+
+                <div class="activity-icon">
+                    ${iconFor(activity.type)}
+                </div>
+
+
+                <div class="activity-info">
+
+                    <div class="activity-name">
+
+                        ${esc(activity.name)}
+
+                    </div>
+
+
+                    <div class="activity-time">
+
+                        ${activity.start}
+                        –
+                        ${activity.end}
+
+                    </div>
+
+
+                    <div class="activity-details">
+
+                        ${
+                            activity.location
+                            ?
+                            `📍 ${esc(activity.location)}`
+                            :
+                            ""
+                        }
+
+                        ${
+                            activity.group
+                            ?
+                            `<br>👥 ${esc(activity.group)}`
+                            :
+                            ""
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="staff-list">
+
+                ${
+                    staff.length
+
+                    ?
+
+                    staff.map(person => `
+
+                        <span class="staff-chip">
+
+                            ${esc(person.name)}
+
+                        </span>
+
+                    `).join("")
+
+                    :
+
+                    `<span
+                        style="
+                            color:#ef4444;
+                            font-size:11px;
+                        "
+                    >
+                        No staff assigned
+                    </span>`
+                }
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    class="secondary"
+                    onclick="editActivity('${activity.id}')"
+                >
+                    Edit
+                </button>
+
+
+                <button
+                    class="danger"
+                    onclick="removeActivity('${activity.id}')"
+                >
+                    Delete
+                </button>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+/* =====================================================
+   STAFF CHECKBOXES
+===================================================== */
+
+function renderStaffCheckboxes(
+    selected = []
+) {
+
+    const container =
+        document.getElementById(
+            "staffCheckboxes"
+        );
+
+
+    container.innerHTML =
+        data.staff.map(person => `
+
+            <label class="staff-check">
+
+                <input
+                    type="checkbox"
+                    value="${person.id}"
+                    ${selected.includes(person.id)
+                        ? "checked"
+                        : ""}
+                >
+
+                ${esc(person.name)}
+
+            </label>
+
+        `).join("");
+
+}
+
+
+/* =====================================================
+   OPEN ADD
+===================================================== */
+
+function openAdd() {
+
+    editingId = null;
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        "Add Activity";
+
+
+    document.getElementById(
+        "deleteButton"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "name"
+    ).value = "";
+
+
+    document.getElementById(
+        "type"
+    ).value =
+        "activity";
+
+
+    document.getElementById(
+        "start"
+    ).value = "";
+
+
+    document.getElementById(
+        "end"
+    ).value = "";
+
+
+    document.getElementById(
+        "location"
+    ).value = "";
+
+
+    document.getElementById(
+        "group"
+    ).value = "";
+
+
+    renderStaffCheckboxes();
+
+
+    document.getElementById(
+        "modal"
+    ).classList.add("show");
+}
+
+
+/* =====================================================
+   EDIT
+===================================================== */
+
+function editActivity(id) {
+
+    const activity =
+        data.activities.find(
+            item =>
+                item.id === id
+        );
+
+
+    if (!activity)
+        return;
+
+
+    editingId = id;
+
+
+    document.getElementById(
+        "modalTitle"
+    ).textContent =
+        "Edit Activity";
+
+
+    document.getElementById(
+        "deleteButton"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "name"
+    ).value =
+        activity.name;
+
+
+    document.getElementById(
+        "type"
+    ).value =
+        activity.type;
+
+
+    document.getElementById(
+        "start"
+    ).value =
+        activity.start;
+
+
+    document.getElementById(
+        "end"
+    ).value =
+        activity.end;
+
+
+    document.getElementById(
+        "location"
+    ).value =
+        activity.location || "";
+
+
+    document.getElementById(
+        "group"
+    ).value =
+        activity.group || "";
+
+
+    renderStaffCheckboxes(
+        activity.staff
+    );
+
+
+    document.getElementById(
+        "modal"
+    ).classList.add("show");
+}
+
+
+/* =====================================================
+   SAVE
+===================================================== */
+
+function saveActivity() {
+
+    const name =
+        document.getElementById(
+            "name"
+        ).value.trim();
+
+
+    const type =
+        document.getElementById(
+            "type"
+        ).value;
+
+
+    const start =
+        document.getElementById(
+            "start"
+        ).value;
+
+
+    const end =
+        document.getElementById(
+            "end"
+        ).value;
+
+
+    const location =
+        document.getElementById(
+            "location"
+        ).value.trim();
+
+
+    const group =
+        document.getElementById(
+            "group"
+        ).value.trim();
+
+
+    const staff =
+        [...document.querySelectorAll(
+            "#staffCheckboxes input:checked"
+        )].map(
+            checkbox =>
+                checkbox.value
+        );
+
+
+    if (!name || !start || !end) {
+
+        alert(
+            "Please enter an activity name, start time and end time."
+        );
+
+        return;
+    }
+
+
+    if (
+        minutes(end) <=
+        minutes(start)
+    ) {
+
+        alert(
+            "The end time must be after the start time."
+        );
+
+        return;
+    }
+
+
+    if (!staff.length) {
+
+        if (
+            !confirm(
+                "No staff members have been assigned. Save anyway?"
+            )
+        ) {
+
+            return;
+        }
+    }
+
+
+    if (editingId) {
+
+        const activity =
+            data.activities.find(
+                item =>
+                    item.id === editingId
+            );
+
+
+        if (activity) {
+
+            activity.name = name;
+
+            activity.type = type;
+
+            activity.date =
+                dateInput.value;
+
+            activity.start = start;
+
+            activity.end = end;
+
+            activity.location =
+                location;
+
+            activity.group =
+                group;
+
+            activity.staff =
+                staff;
+        }
+
+    } else {
+
+        data.activities.push({
+
+            id: newId("activity"),
+
+            name,
+
+            type,
+
+            date:
+                dateInput.value,
+
+            start,
+
+            end,
+
+            location,
+
+            group,
+
+            staff
+
+        });
+
+    }
+
+
+    saveData(data);
+
+    closeModal();
+
+    render();
+}
+
+
+/* =====================================================
+   DELETE
+===================================================== */
+
+function deleteActivity() {
+
+    if (!editingId)
+        return;
+
+
+    if (
+        !confirm(
+            "Delete this activity? It will be removed from every assigned staff member's schedule."
+        )
+    ) {
+
+        return;
+    }
+
+
+    data.activities =
+        data.activities.filter(
+            activity =>
+                activity.id !== editingId
+        );
+
+
+    saveData(data);
+
+    closeModal();
+
+    render();
+}
+
+
+function removeActivity(id) {
+
+    if (
+        !confirm(
+            "Delete this activity?"
+        )
+    ) {
+
+        return;
+    }
+
+
+    data.activities =
+        data.activities.filter(
+            activity =>
+                activity.id !== id
+        );
+
+
+    saveData(data);
+
+    render();
+}
+
+
+/* =====================================================
+   COPY DAY
+===================================================== */
+
+function copyDay() {
+
+    const target =
+        prompt(
+            "Copy this day's activities to which date?\n\nUse YYYY-MM-DD."
+        );
+
+
+    if (!target)
+        return;
+
+
+    if (
+        !/^\d{4}-\d{2}-\d{2}$/.test(
+            target
+        )
+    ) {
+
+        alert(
+            "Please use YYYY-MM-DD."
+        );
+
+        return;
+    }
+
+
+    if (
+        target === dateInput.value
+    ) {
+
+        alert(
+            "Choose a different date."
+        );
+
+        return;
+    }
+
+
+    const source =
+        data.activities.filter(
+            activity =>
+                activity.date ===
+                dateInput.value
+        );
+
+
+    const copied =
+        source.map(activity => ({
+
+            ...structuredClone(activity),
+
+            id:
+                newId("activity"),
+
+            date:
+                target
+
+        }));
+
+
+    data.activities =
+        data.activities.filter(
+            activity =>
+                activity.date !== target
+        );
+
+
+    data.activities.push(
+        ...copied
+    );
+
+
+    saveData(data);
+
+
+    alert(
+        `${copied.length} activities copied.`
+    );
+}
+
+
+/* =====================================================
+   CLEAR DAY
+===================================================== */
+
+function clearDay() {
+
+    const date =
+        dateInput.value;
+
+
+    if (
+        !confirm(
+            `Clear every activity on ${date}?`
+        )
+    ) {
+
+        return;
+    }
+
+
+    data.activities =
+        data.activities.filter(
+            activity =>
+                activity.date !== date
+        );
+
+
+    saveData(data);
+
+    render();
+}
+
+
+/* =====================================================
+   CLOSE
+===================================================== */
+
+function closeModal() {
+
+    document.getElementById(
+        "modal"
+    ).classList.remove("show");
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+render();
+
+</script>
+
+</body>
+
+</html>
