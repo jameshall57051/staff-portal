@@ -2,7 +2,7 @@
 // EXCEL DATA
 // ===============================
 
-const EXCEL_URL = "https://drive.google.com/file/d/1sQPr1fQzeStqNgRb9zOqJ4Y6sRwsDoay/view?usp=drive_link";
+const EXCEL_URL = "https://www.dropbox.com/scl/fi/gc9dfpia2yu96xy9zqmqr/Book-1-Sheet1.csv?rlkey=bh6nivl6om1e226xj9eki8xu2&st=flsp2xfz&dl=0";
 
 async function loadExcelData() {
     try {
