@@ -2,7 +2,7 @@
 // EXCEL DATA
 // ===============================
 
-const EXCEL_URL = "PASTE-YOUR-EXCEL-CSV-LINK-HERE";
+const EXCEL_URL = "https://drive.google.com/file/d/1sQPr1fQzeStqNgRb9zOqJ4Y6sRwsDoay/view?usp=drive_link";
 
 async function loadExcelData() {
     try {
