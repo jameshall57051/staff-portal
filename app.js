@@ -1,3 +1,49 @@
+// ===============================
+// EXCEL DATA
+// ===============================
+
+const EXCEL_URL = "PASTE-YOUR-EXCEL-CSV-LINK-HERE";
+
+async function loadExcelData() {
+    try {
+        const response = await fetch(EXCEL_URL);
+
+        if (!response.ok) {
+            throw new Error("Could not load Excel data");
+        }
+
+        const csv = await response.text();
+
+        const rows = csv.trim().split("\n");
+
+        // First row contains the column names
+        const headers = rows[0].split(",").map(header => header.trim());
+
+        // Turn each remaining row into an object
+        const data = rows.slice(1).map(row => {
+            const values = row.split(",");
+
+            const item = {};
+
+            headers.forEach((header, index) => {
+                item[header] = values[index]?.trim() || "";
+            });
+
+            return item;
+        });
+
+        return data;
+
+    } catch (error) {
+        console.error("Error loading Excel:", error);
+        return [];
+    }
+}
+
+const schedule = await loadExcelData();
+
+console.log(schedule);
+
 const STORAGE_KEY = "summerSchoolData";
 
 const TODAY = new Date();
