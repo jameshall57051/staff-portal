@@ -1,158 +1,876 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
 <title>My Schedule</title>
+
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f3f5f8;color:#172033;padding-bottom:76px}
-header{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;padding:20px 18px}.wrap,.container{max-width:760px;margin:auto}.container{padding:16px}.back{color:#fff;text-decoration:none;font-size:13px}.eyebrow{font-size:11px;letter-spacing:1px;font-weight:700;opacity:.8;margin-top:15px}h1{margin:4px 0 0;font-size:27px}
-.card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 10px #0000000b;margin-bottom:14px}.tabs{display:flex;gap:7px}.tab{flex:1;border:0;border-radius:10px;padding:10px 5px;background:#e9edf3;color:#4b5563;font-weight:700}.tab.active{background:#2563eb;color:#fff}
-.status{display:flex;align-items:center;gap:13px}.dot{width:16px;height:16px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 5px #dcfce7}.dot.off{background:#ef4444;box-shadow:0 0 0 5px #fee2e2}.muted{color:#6b7280;font-size:12px;margin-top:4px}.section{font-weight:800;margin:20px 2px 9px}
-.meal-card{background:#fff;border-radius:15px;padding:14px;margin-bottom:9px;border-left:5px solid #22c55e;box-shadow:0 2px 8px #00000009}.meal-card.lunch{border-left-color:#0ea5e9}.meal-card.dinner{border-left-color:#f59e0b}.meal-title{font-weight:800}.meal-time{font-size:20px;font-weight:800;margin-top:3px}.meal-note{font-size:11px;color:#6b7280;margin-top:4px}
-.shift{background:#fff;border-radius:15px;padding:14px;display:flex;gap:13px;border-left:5px solid #22c55e;box-shadow:0 2px 8px #00000009;margin-bottom:9px}.shift.excursion{border-left-color:#8b5cf6}.shift.lunch{border-left-color:#0ea5e9}.shift.dinner{border-left-color:#f59e0b}.shift.duty{border-left-color:#64748b}.shift.current{background:#f0fdf4;box-shadow:0 0 0 2px #bbf7d0}
-.time{width:63px;text-align:right;flex-shrink:0}.start{font-weight:800;font-size:13px}.end{font-size:11px;color:#9ca3af;margin-top:3px}.content{flex:1;min-width:0}.title{font-weight:800;font-size:15px}.details{color:#6b7280;font-size:12px;line-height:1.6;margin-top:4px}.current-label{display:inline-block;background:#22c55e;color:#fff;border-radius:6px;padding:3px 6px;font-size:9px;font-weight:800;margin-bottom:6px}.empty{text-align:center;color:#8a93a3;padding:30px}
-.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}.summary-box{background:#fff;border-radius:14px;padding:15px;text-align:center}.number{font-size:21px;font-weight:800;color:#2563eb}.label{color:#9ca3af;font-size:10px;text-transform:uppercase;margin-top:3px}
-.nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:#fff;border-top:1px solid #e5e7eb;display:flex;justify-content:center;gap:70px;align-items:center}.nav a{color:#687386;text-decoration:none;text-align:center;font-size:11px}.nav span{display:block;font-size:20px}.nav .active{color:#2563eb}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #f3f5f8;
+    color: #172033;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    padding-bottom: 80px;
+}
+
+header {
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4f46e5
+        );
+
+    color: white;
+
+    padding: 20px;
+}
+
+.container {
+    max-width: 760px;
+    margin: auto;
+    padding: 16px;
+}
+
+.back {
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.eyebrow {
+    margin-top: 15px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: .8;
+}
+
+h1 {
+    margin: 4px 0;
+    font-size: 27px;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 14px;
+
+    box-shadow:
+        0 2px 10px rgba(0,0,0,.06);
+}
+
+.tabs {
+    display: flex;
+    gap: 7px;
+}
+
+.tab {
+    flex: 1;
+
+    border: 0;
+    border-radius: 10px;
+
+    padding: 10px 5px;
+
+    background: #e9edf3;
+    color: #4b5563;
+
+    font-weight: 700;
+}
+
+.tab.active {
+    background: #2563eb;
+    color: white;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.status-dot {
+    width: 16px;
+    height: 16px;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+
+    box-shadow:
+        0 0 0 5px #dcfce7;
+}
+
+.status-dot.off {
+    background: #ef4444;
+
+    box-shadow:
+        0 0 0 5px #fee2e2;
+}
+
+.muted {
+    color: #6b7280;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.section {
+    font-weight: 800;
+    margin: 20px 2px 9px;
+}
+
+.timeline {
+    position: relative;
+}
+
+.timeline::before {
+    content: "";
+
+    position: absolute;
+
+    left: 78px;
+    top: 10px;
+    bottom: 10px;
+
+    width: 2px;
+
+    background: #e5e7eb;
+}
+
+.timeline-item {
+
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+        65px 1fr;
+
+    gap: 28px;
+
+    margin-bottom: 10px;
+}
+
+.time {
+    font-size: 12px;
+    text-align: right;
+    padding-top: 13px;
+    color: #64748b;
+}
+
+.timeline-dot {
+
+    position: absolute;
+
+    left: 73px;
+    top: 17px;
+
+    width: 12px;
+    height: 12px;
+
+    border-radius: 50%;
+
+    background: #22c55e;
+
+    border: 3px solid white;
+
+    box-shadow:
+        0 0 0 1px #d1d5db;
+
+    z-index: 1;
+}
+
+.timeline-dot.meal {
+    background: #0ea5e9;
+}
+
+.schedule-card {
+
+    background: white;
+
+    border-radius: 14px;
+
+    padding: 13px;
+
+    box-shadow:
+        0 2px 8px rgba(0,0,0,.05);
+
+    border-left:
+        5px solid #22c55e;
+}
+
+.schedule-card.excursion {
+    border-left-color: #8b5cf6;
+}
+
+.schedule-card.duty {
+    border-left-color: #64748b;
+}
+
+.schedule-card.meal {
+
+    border-left-color: #0ea5e9;
+
+    background: #f8fdff;
+}
+
+.schedule-card.meal-duty {
+
+    border-left-color: #f59e0b;
+
+    background: #fffbeb;
+}
+
+.title {
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.badge {
+
+    display: inline-block;
+
+    border-radius: 6px;
+
+    padding: 3px 6px;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    margin-bottom: 5px;
+}
+
+.meal-badge {
+    background: #e0f2fe;
+    color: #075985;
+}
+
+.duty-badge {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.details {
+
+    color: #6b7280;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+    margin-top: 4px;
+}
+
+.empty {
+
+    text-align: center;
+
+    color: #8a93a3;
+
+    padding: 30px;
+}
+
+.summary {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 10px;
+}
+
+.summary-box {
+
+    background: white;
+
+    border-radius: 14px;
+
+    padding: 15px;
+
+    text-align: center;
+}
+
+.number {
+
+    font-size: 21px;
+
+    font-weight: 800;
+
+    color: #2563eb;
+}
+
+.label {
+
+    color: #9ca3af;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    margin-top: 3px;
+}
+
+.nav {
+
+    position: fixed;
+
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    height: 64px;
+
+    background: white;
+
+    border-top:
+        1px solid #e5e7eb;
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 70px;
+
+    align-items: center;
+}
+
+.nav a {
+
+    color: #687386;
+
+    text-decoration: none;
+
+    text-align: center;
+
+    font-size: 11px;
+}
+
+.nav span {
+
+    display: block;
+
+    font-size: 20px;
+}
+
+.nav .active {
+    color: #2563eb;
+}
+
 </style>
+
 </head>
+
 <body>
-<header><div class="wrap"><a class="back" href="index.html">← All Staff</a><div class="eyebrow">SUMMER SCHOOL 2026</div><h1 id="name">My Schedule</h1></div></header>
+
+<header>
+
+<div class="container">
+
+<a
+    class="back"
+    href="index.html"
+>
+    ← All Staff
+</a>
+
+<div class="eyebrow">
+    SUMMER SCHOOL 2026
+</div>
+
+<h1 id="staffName">
+    My Schedule
+</h1>
+
+</div>
+
+</header>
 
 <main class="container">
+
 <div class="card">
+
 <div class="tabs">
-<button class="tab active" data-day="0">Today</button>
-<button class="tab" data-day="1">Tomorrow</button>
-<button class="tab" data-day="2">Day after</button>
+
+<button
+    class="tab active"
+    data-day="0"
+>
+    Today
+</button>
+
+<button
+    class="tab"
+    data-day="1"
+>
+    Tomorrow
+</button>
+
+<button
+    class="tab"
+    data-day="2"
+>
+    Day after
+</button>
+
 </div>
-<div id="date" style="margin-top:12px;font-size:13px;font-weight:700"></div>
+
+<div
+    id="date"
+    style="
+        margin-top:12px;
+        font-size:13px;
+        font-weight:700;
+    "
+></div>
+
 </div>
 
-<div id="status" class="card"></div>
+<div
+    id="status"
+    class="card"
+></div>
 
-<div class="section">🍽 Meal times</div>
-<div id="meals"></div>
+<div class="section">
+    Today's schedule
+</div>
 
-<div class="section">Work schedule</div>
-<div id="schedule"></div>
+<div
+    id="timeline"
+    class="timeline"
+></div>
 
-<div class="section">Summary</div>
-<div id="summary" class="summary"></div>
+<div class="section">
+    Summary
+</div>
+
+<div
+    id="summary"
+    class="summary"
+></div>
+
 </main>
 
 <nav class="nav">
-<a class="active" href="index.html"><span>⌂</span>Staff</a>
-<a href="admin.html"><span>▦</span>Admin</a>
+
+<a
+    class="active"
+    href="index.html"
+>
+    <span>⌂</span>
+    Staff
+</a>
+
+<a href="admin.html">
+    <span>▦</span>
+    Admin
+</a>
+
 </nav>
 
 <script src="app.js"></script>
-<script>
-const staffId = new URLSearchParams(location.search).get("id");
-let offset = 0;
 
-function render() {
+<script>
+
+const staffId =
+    new URLSearchParams(
+        window.location.search
+    ).get("id");
+
+let dayOffset = 0;
+
+function renderSchedule() {
+
     const data = getData();
-    const staff = data.staff.find(s => s.id === staffId);
+
+    const staff =
+        data.staff.find(
+            person => person.id === staffId
+        );
 
     if (!staff) {
-        document.getElementById("name").textContent = "Staff Member";
-        document.getElementById("status").innerHTML = `<div class="empty">Staff member not found. Open this page from the staff overview.</div>`;
+
+        document.getElementById(
+            "staffName"
+        ).textContent = "Staff Member";
+
+        document.getElementById(
+            "status"
+        ).innerHTML =
+            `<div class="empty">
+                Staff member not found.
+            </div>`;
+
         return;
     }
 
-    const date = addDays(TODAY, offset);
-    const schedule = getStaffSchedule(staff.id, date);
-    const status = getStaffStatus(staff.id, date);
+    const date =
+        addDays(
+            TODAY,
+            dayOffset
+        );
 
-    document.getElementById("name").textContent = staff.name;
-    document.getElementById("date").textContent = formatDate(date);
+    /*
+     * IMPORTANT:
+     *
+     * Activities only appear if this
+     * staff member is assigned.
+     *
+     * Meals appear for EVERYONE.
+     */
+    const allItems =
+        getActivitiesForDate(date);
 
-    document.querySelectorAll(".tab").forEach(button => {
-        button.classList.toggle("active", Number(button.dataset.day) === offset);
-    });
+    const visibleItems =
+        allItems.filter(item => {
 
-    document.getElementById("status").innerHTML = `
-        <div class="status">
-            <div class="dot ${status.working ? "" : "off"}"></div>
-            <div>
-                <strong>${status.current ? "Working now" : status.next ? `Next shift at ${status.next.start}` : "Not working"}</strong>
-                <div class="muted">${status.item ? esc(status.item.name) : "No scheduled work shifts for this day."}</div>
-            </div>
-        </div>`;
+            if (item.type === "meal") {
+                return true;
+            }
 
-    const meals = mealBlocksForDate(date);
-    document.getElementById("meals").innerHTML = meals.length
-        ? meals.map(meal => {
-            const duty = schedule.some(a =>
-                isMealDuty(a, meal.meal) &&
-                minutes(a.start) < minutes(meal.end) &&
-                minutes(a.end) > minutes(meal.start)
+            return item.staff.includes(
+                staff.id
             );
-            return `
-                <div class="meal-card ${meal.meal.toLowerCase()}">
-                    <div class="meal-title">🍽️ ${meal.meal}</div>
-                    <div class="meal-time">${meal.start} – ${meal.end}</div>
-                    <div class="meal-note">
-                        Your eating time${duty ? " · You are also on duty during this meal" : ""}
-                    </div>
-                </div>`;
-        }).join("")
-        : `<div class="card empty">No meal times have been set.</div>`;
+        });
 
-    const box = document.getElementById("schedule");
+    const workSchedule =
+        getStaffSchedule(
+            staff.id,
+            date
+        );
 
-    if (!schedule.length) {
-        box.innerHTML = `<div class="card empty">No work shifts scheduled.</div>`;
+    const status =
+        getStaffStatus(
+            staff.id,
+            date
+        );
+
+    document.getElementById(
+        "staffName"
+    ).textContent = staff.name;
+
+    document.getElementById(
+        "date"
+    ).textContent =
+        formatDate(date);
+
+    document
+        .querySelectorAll(".tab")
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                Number(button.dataset.day) ===
+                    dayOffset
+            );
+
+        });
+
+    document.getElementById(
+        "status"
+    ).innerHTML = `
+
+        <div class="status">
+
+            <div class="status-dot
+                ${status.working ? "" : "off"}">
+            </div>
+
+            <div>
+
+                <strong>
+                    ${
+                        status.current
+                            ? "Working now"
+                            : status.next
+                                ? `Next shift at ${status.next.start}`
+                                : "No work scheduled"
+                    }
+                </strong>
+
+                <div class="muted">
+
+                    ${
+                        status.item
+                            ? esc(
+                                status.item.type === "meal"
+                                    ? getMealLabel(status.item)
+                                    : status.item.name
+                              )
+                            : "No scheduled work shifts."
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+    const timeline =
+        document.getElementById(
+            "timeline"
+        );
+
+    if (!visibleItems.length) {
+
+        timeline.innerHTML = `
+            <div class="card empty">
+                Nothing scheduled for you today.
+            </div>
+        `;
+
     } else {
-        box.innerHTML = schedule.map(activity => {
-            const current = status.current && status.current.id === activity.id;
-            return `
-                <div class="shift ${activity.type} ${current ? "current" : ""}">
-                    <div class="time">
-                        <div class="start">${activity.start}</div>
-                        <div class="end">${activity.end}</div>
-                    </div>
-                    <div class="content">
-                        ${current ? `<div class="current-label">Working now</div>` : ""}
-                        <div class="title">${iconFor(activity.type)} ${esc(activity.name)}</div>
-                        <div class="details">
-                            ${activity.location ? `📍 ${esc(activity.location)}` : ""}
-                            ${activity.group ? `<br>👥 ${esc(activity.group)}` : ""}
+
+        timeline.innerHTML =
+            visibleItems
+                .map(item => {
+
+                    const meal =
+                        item.type === "meal";
+
+                    const mealDuty =
+                        meal &&
+                        item.dutyStaff.includes(
+                            staff.id
+                        );
+
+                    let cardClass =
+                        item.type;
+
+                    if (meal) {
+
+                        cardClass =
+                            mealDuty
+                                ? "meal-duty"
+                                : "meal";
+
+                    }
+
+                    return `
+
+                    <div class="timeline-item">
+
+                        <div class="time">
+
+                            ${item.start}
+
+                            <br>
+
+                            ${item.end}
+
                         </div>
+
+                        <div
+                            class="timeline-dot
+                                ${meal ? "meal" : ""}"
+                        ></div>
+
+                        <div
+                            class="
+                                schedule-card
+                                ${cardClass}
+                            "
+                        >
+
+                            ${
+                                meal
+                                    ? `
+                                        <div
+                                            class="
+                                                badge
+                                                ${
+                                                    mealDuty
+                                                        ? "duty-badge"
+                                                        : "meal-badge"
+                                                }
+                                            "
+                                        >
+
+                                            ${
+                                                mealDuty
+                                                    ? "🍽️ MEAL DUTY"
+                                                    : "🍽️ STAFF MEAL"
+                                            }
+
+                                        </div>
+                                    `
+                                    : ""
+                            }
+
+                            <div class="title">
+
+                                ${
+                                    meal
+                                        ? getMealLabel(item)
+                                        : `${iconFor(item.type)}
+                                           ${esc(item.name)}`
+                                }
+
+                            </div>
+
+                            <div class="details">
+
+                                ${
+                                    meal
+                                        ? (
+                                            mealDuty
+                                                ? "You are on duty during this meal."
+                                                : "This is your eating time."
+                                          )
+                                        : ""
+                                }
+
+                                ${
+                                    item.location
+                                        ? `<br>📍 ${esc(item.location)}`
+                                        : ""
+                                }
+
+                                ${
+                                    item.group
+                                        ? `<br>👥 ${esc(item.group)}`
+                                        : ""
+                                }
+
+                            </div>
+
+                        </div>
+
                     </div>
-                </div>`;
-        }).join("");
+
+                    `;
+
+                })
+                .join("");
+
     }
 
-    const totalMinutes = schedule.reduce((sum, a) =>
-        sum + minutes(a.end) - minutes(a.start), 0
-    );
+    /*
+     * Work summary deliberately excludes
+     * ordinary meal times.
+     *
+     * A meal only counts as work if
+     * the staff member is on meal duty.
+     */
 
-    const hours = Math.floor(totalMinutes / 60);
-    const mins = totalMinutes % 60;
-    const hoursText = mins ? `${hours}h ${mins}m` : `${hours}h`;
+    const workMinutes =
+        workSchedule
+            .filter(
+                item =>
+                    item.type !== "meal"
+            )
+            .reduce(
+                (total, item) =>
+                    total +
+                    minutes(item.end) -
+                    minutes(item.start),
+                0
+            );
 
-    document.getElementById("summary").innerHTML = `
+    const mealDuties =
+        workSchedule.filter(
+            item =>
+                item.type === "meal"
+        ).length;
+
+    const hours =
+        Math.floor(
+            workMinutes / 60
+        );
+
+    const mins =
+        workMinutes % 60;
+
+    document.getElementById(
+        "summary"
+    ).innerHTML = `
+
         <div class="summary-box">
-            <div class="number">${hoursText}</div>
-            <div class="label">Scheduled hours</div>
+
+            <div class="number">
+
+                ${
+                    mins
+                        ? `${hours}h ${mins}m`
+                        : `${hours}h`
+                }
+
+            </div>
+
+            <div class="label">
+                Scheduled work
+            </div>
+
         </div>
+
         <div class="summary-box">
-            <div class="number">${schedule.length}</div>
-            <div class="label">Work shifts</div>
-        </div>`;
+
+            <div class="number">
+                ${mealDuties}
+            </div>
+
+            <div class="label">
+                Meal duties
+            </div>
+
+        </div>
+
+    `;
 }
 
-document.querySelectorAll(".tab").forEach(button => {
-    button.addEventListener("click", () => {
-        offset = Number(button.dataset.day);
-        render();
-    });
-});
+document
+    .querySelectorAll(".tab")
+    .forEach(button => {
 
-render();
-setInterval(render, 60000);
+        button.addEventListener(
+            "click",
+            () => {
+
+                dayOffset =
+                    Number(
+                        button.dataset.day
+                    );
+
+                renderSchedule();
+
+            }
+        );
+
+    });
+
+renderSchedule();
+
+setInterval(
+    renderSchedule,
+    60000
+);
+
 </script>
+
 </body>
+
 </html>
