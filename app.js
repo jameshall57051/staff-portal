@@ -44,6 +44,30 @@ const schedule = await loadExcelData();
 
 console.log(schedule);
 
+async function displaySchedule() {
+
+    const schedule = await loadExcelData();
+
+    const container = document.getElementById("schedule");
+
+    container.innerHTML = "";
+
+    schedule.forEach(event => {
+
+        const eventElement = document.createElement("div");
+
+        eventElement.innerHTML = `
+            <strong>${event.Start}</strong>
+            ${event.Event}
+            <small>${event.Location}</small>
+        `;
+
+        container.appendChild(eventElement);
+    });
+}
+
+displaySchedule();
+
 const STORAGE_KEY = "summerSchoolData";
 
 const TODAY = new Date();
